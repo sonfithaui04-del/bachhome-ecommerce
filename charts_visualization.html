@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biểu đồ báo cáo - Chương 9: Kết quả và Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h2 {
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            color: #444;
+            margin-top: 40px;
+        }
+        .chart-container {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background-color: #fff;
+        }
+        .chart-description {
+            margin-bottom: 15px;
+            font-style: italic;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chương 9: KẾT QUẢ VÀ DEMO - Biểu đồ trực quan</h1>
+
+        <h2>9.1 Cơ cấu thành phần hệ thống</h2>
+        <div class="chart-description">Tỉ lệ phân bố các thành phần chính trong hệ thống Food Ordering Microservices.</div>
+        <div class="chart-container">
+            <div class="mermaid">
+                pie title Cơ cấu thành phần hệ thống
+                    "Microservices" : 7
+                    "Databases (PostgreSQL)" : 6
+                    "Core Infra (Eureka, Gateway)" : 2
+                    "Frontends (User & Admin)" : 2
+            </div>
+        </div>
+        
+        <p><strong>Thống kê chi tiết:</strong></p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Tiêu chí</th>
+                    <th>Số lượng</th>
+                    <th>Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Microservices</td>
+                    <td>7</td>
+                    <td>Auth, Menu, Order, Payment, Inventory, Notification, Gateway</td>
+                </tr>
+                <tr>
+                    <td>Databases</td>
+                    <td>6</td>
+                    <td>PostgreSQL instances (Database-per-service pattern)</td>
+                </tr>
+                <tr>
+                    <td>Docker Containers</td>
+                    <td>15+</td>
+                    <td>Bao gồm các services, databases và message broker</td>
+                </tr>
+                <tr>
+                    <td>Kubernetes Pods</td>
+                    <td>19</td>
+                    <td>Đảm bảo tính sẵn sàng cao (High Availability)</td>
+                </tr>
+                <tr>
+                    <td>API Endpoints</td>
+                    <td>30+</td>
+                    <td>Các REST API phục vụ nghiệp vụ</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>9.2 Trạng thái triển khai Kubernetes</h2>
+        <div class="chart-description">Sơ đồ trạng thái hoạt động của các tài nguyên trên Kubernetes Cluster.</div>
+        <div class="chart-container">
+            <div class="mermaid">
+                graph TD
+                    subgraph K8s_Cluster [Kubernetes Deployment Status]
+                        style K8s_Cluster fill:#e3f2fd,stroke:#1565c0
+                        
+                        P[19 Pods] -->|Status: Running| OK((✅ Healthy))
+                        S[12 Services] -->|Status: Active| OK
+                        D[6 StatefulSets] -->|Status: Ready| OK
+                        H[2 Autoscalers] -->|Status: Active| OK
+                    end
+                    
+                    style OK fill:#66bb6a,stroke:#2e7d32,color:white
+            </div>
+        </div>
+
+        <h2>9.3 Quy trình xử lý đơn hàng (Demo)</h2>
+        <div class="chart-description">Biểu đồ tuần tự (Sequence Diagram) mô tả luồng xử lý đơn hàng từ client đến các services backend.</div>
+        <div class="chart-container">
+            <div class="mermaid">
+                sequenceDiagram
+                    autonumber
+                    actor U as Khách hàng
+                    participant GW as API Gateway
+                    participant O as Order Service
+                    participant I as Inventory Service
+                    participant N as Notification Service
+
+                    U->>GW: 1. Gửi yêu cầu đặt hàng (POST /api/orders)
+                    activate GW
+                    GW->>O: Forward Request
+                    activate O
+                    
+                    note right of O: Validate & Save Order (PENDING)
+                    O-->>GW: Order Created (201)
+                    GW-->>U: Trả về thông tin đơn hàng
+                    
+                    par Xử lý bất đồng bộ (RabbitMQ)
+                        O->>I: Event: order.created
+                        activate I
+                        I->>I: Trừ tồn kho (Update Stock)
+                        deactivate I
+                    and
+                        O->>N: Event: order.created
+                        activate N
+                        N->>U: Gửi Email xác nhận
+                        deactivate N
+                    end
+                    
+                    deactivate O
+                    deactivate GW
+            </div>
+        </div>
+
+        <h2>9.4 Hiệu năng hệ thống (Performance)</h2>
+        <div class="chart-description">Biểu đồ Gantt thể hiện thời gian phản hồi trung bình của các API chính.</div>
+        <div class="chart-container">
+            <div class="mermaid">
+                gantt
+                    title Thời gian phản hồi API (ms)
+                    dateFormat X
+                    axisFormat %s
+                    
+                    section Read API
+                    Get Menu List       : 0, 85
+                    Get Order Detail    : 0, 120
+                    
+                    section Write API
+                    Login               : 0, 150
+                    Create Order        : 0, 320
+            </div>
+        </div>
+    </div>
+</body>
+</html>

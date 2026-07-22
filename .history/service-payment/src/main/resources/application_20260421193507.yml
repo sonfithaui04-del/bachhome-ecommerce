@@ -1,0 +1,39 @@
+server:
+  port: 8084
+spring:
+  application:
+    name: service-payment
+  datasource:
+    url: jdbc:postgresql://localhost:5435/food_ordering_payment
+    username: postgres
+    password: 10112004
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+# SePay / VietQR Configuration
+sepay:
+  bank-account-number: ${SEPAY_BANK_ACCOUNT_NUMBER:7280010112004}
+  bank-code: ${SEPAY_BANK_CODE:MB}
+  account-name: ${SEPAY_ACCOUNT_NAME:NGUYEN VAN A}
+  api-token: ${SEPAY_API_TOKEN:}
+  api-url: ${SEPAY_API_URL:https://my.sepay.vn/userapi}
+  frontend-url: ${SEPAY_FRONTEND_URL:http://localhost:3000}
+
+logging:
+  pattern:
+    console: "[%d{yyyy-MM-dd HH:mm:ss}] [%level] [PAYMENT-SERVICE] %msg%n"
+
+
+

@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mô tả chi tiết chức năng hệ thống</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            line-height: 1.5;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            background-color: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 40px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+        }
+        .uc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 14pt;
+        }
+        .uc-table th, .uc-table td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+        }
+        .uc-table > tbody > tr > th {
+            width: 25%;
+            background-color: #fff;
+            text-align: left;
+            font-weight: bold;
+        }
+        .flow-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+            border: none;
+        }
+        .flow-table th, .flow-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: left;
+        }
+        .flow-table th {
+            background-color: #f2f2f2;
+            text-align: center;
+            font-weight: bold;
+        }
+        .diagram-container {
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #fff;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .diagram-title {
+            font-style: italic;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BẢNG MÔ TẢ CHI TIẾT CÁC CHỨC NĂNG HỆ THỐNG</h1>
+
+        <!-- 1. Tổng quan -->
+        <h2>1. Biểu đồ Use Case Tổng quát</h2>
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 1. Biểu đồ Use Case Tổng thể Hệ thống</div>
+            <div class="mermaid">
+                %%{init: {'theme': 'neutral', 'flowchart': {'curve': 'basis'}}}%%
+                graph TB
+                    %% --- Actors at Top ---
+                    subgraph Actors [Tác nhân]
+                        direction LR
+                        style Actors fill:none,stroke:none
+                        User("fa:fa-user<br/>Khách hàng")
+                        Admin("fa:fa-user-tie<br/>Admin")
+                    end
+
+                    %% --- Inheritance ---
+                    Admin -.-> User
+
+                    %% --- System Services arranged in 2 Columns ---
+                    subgraph System [Hệ thống Food Ordering]
+                        direction LR
+                        style System fill:#fff,stroke:#333
+
+                        %% COLUMN 1 (Left)
+                        subgraph Col1 [ ]
+                            direction TB
+                            style Col1 fill:none,stroke:none
+
+                            subgraph Auth_Service [Service: Xác thực & User]
+                                style Auth_Service fill:#f4f6f7,stroke:#bdc3c7,stroke-dasharray: 5 5
+                                UC1([Xác thực người dùng])
+                                UC9([Quản lý người dùng])
+                            end
+
+                            subgraph Menu_Service [Service: Menu & Sản phẩm]
+                                style Menu_Service fill:#fcf3cf,stroke:#f1c40f,stroke-dasharray: 5 5
+                                UC2([Xem món ăn])
+                                UC6([Quản lý danh mục])
+                                UC7([Quản lý món ăn])
+                            end
+                        end
+
+                        %% COLUMN 2 (Right)
+                        subgraph Col2 [ ]
+                            direction TB
+                            style Col2 fill:none,stroke:none
+
+                            subgraph Order_Service [Service: Đơn hàng]
+                                style Order_Service fill:#d5f5e3,stroke:#2ecc71,stroke-dasharray: 5 5
+                                UC3([Thêm món vào giỏ])
+                                UC4([Đặt hàng])
+                            end
+
+                            subgraph Inventory_Service [Service: Kho & Nguyên liệu]
+                                style Inventory_Service fill:#ebf5fb,stroke:#3498db,stroke-dasharray: 5 5
+                                UC8([Quản lý nguyên liệu])
+                            end
+
+                            subgraph Report_Service [Service: Báo cáo]
+                                style Report_Service fill:#ebdef0,stroke:#9b59b6,stroke-dasharray: 5 5
+                                UC5([Xem báo cáo])
+                            end
+                        end
+                    end
+
+                    %% --- Styling ---
+                    classDef actorCls fill:#fff,stroke:#333,stroke-width:1px,font-size:14px,font-weight:bold,rx:5,ry:5;
+                    class User,Admin actorCls;
+
+                    %% --- Connections ---
+                    %% User to Col1
+                    User --> UC1
+                    User --> UC2
+                    
+                    %% User to Col2
+                    User --> UC3
+                    User --> UC4
+
+                    %% Admin to Col1
+                    Admin --> UC9
+                    Admin --> UC6
+                    Admin --> UC7
+
+                    %% Admin to Col2
+                    Admin --> UC8
+                    Admin --> UC5
+
+                    %% -- Force Layout Alignment (Invisible Links) --
+                    Auth_Service ~~~ Order_Service
+            </div>
+        </div>
+        <br>
+
+
+
+        <!-- 2. Chi tiết chức năng -->
+
+        <h2>2.1. Đăng ký tài khoản</h2>
+        <table class="uc-table">
+            <tr>
+                <th>Mã Use case</th>
+                <td colspan="3">UC_DangKy</td>
+                <th>Tên Use case</th>
+                <td colspan="3">Đăng ký tài khoản khách hàng</td>
+            </tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td colspan="7">Khách hàng (Người dùng chưa có tài khoản)</td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td colspan="7">Người dùng sử dụng chức năng này để tạo tài khoản mới, cho phép truy cập vào hệ thống đặt món.</td>
+            </tr>
+            <tr>
+                <th>Sự kiện kích hoạt</th>
+                <td colspan="7">Người dùng nhấn vào nút "Đăng ký" trên giao diện trang chủ hoặc trang đăng nhập.</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td colspan="7">Người dùng chưa đăng nhập vào hệ thống.</td>
+            </tr>
+            <tr>
+                <th rowspan="2">Luồng sự kiện chính</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 20%">Thực hiện bởi</th>
+                            <th>Hành động</th>
+                        </tr>
+                        <tr>
+                            <td align="center">1</td>
+                            <td>Người dùng</td>
+                            <td>Nhấn chọn chức năng "Đăng ký" trên giao diện.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">2</td>
+                            <td>Hệ thống</td>
+                            <td>Hiển thị biểu mẫu đăng ký (Email, Mật khẩu, Họ tên, Số điện thoại).</td>
+                        </tr>
+                        <tr>
+                            <td align="center">3</td>
+                            <td>Người dùng</td>
+                            <td>Nhập đầy đủ thông tin yêu cầu và nhấn nút "Gửi".</td>
+                        </tr>
+                        <tr>
+                            <td align="center">4</td>
+                            <td>Hệ thống</td>
+                            <td>Kiểm tra tính hợp lệ của dữ liệu (định dạng email, độ mạnh mật khẩu).</td>
+                        </tr>
+                        <tr>
+                            <td align="center">5</td>
+                            <td>Hệ thống</td>
+                            <td>Kiểm tra email đã tồn tại trong cơ sở dữ liệu chưa.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">6</td>
+                            <td>Hệ thống</td>
+                            <td>Tạo tài khoản mới, lưu vào CSDL và điều hướng người dùng về trang đăng nhập.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr></tr> <!-- Spacer for rowspan -->
+            <tr>
+                <th>Luồng sự kiện thay thế</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <td align="center" style="width: 5%">5a</td>
+                            <td style="width: 20%">Hệ thống</td>
+                            <td>Nếu email đã tồn tại, hiển thị thông báo lỗi "Email này đã được sử dụng" và yêu cầu nhập lại. Quay lại bước 3.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <th>Hậu điều kiện</th>
+                <td colspan="7">Tài khoản mới được tạo thành công, thông tin user được lưu trữ trong hệ thống Authentication.</td>
+            </tr>
+        </table>
+        
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 2.1. Biểu đồ tuần tự chức năng Đăng ký</div>
+            <div class="mermaid">
+                sequenceDiagram
+                autonumber
+                actor U as Khách hàng
+                participant FE as "&lt;&lt;RegisterUI&gt;&gt;&lt;br/&gt;Giao diện Đăng ký"
+                participant Gateway as "&lt;&lt;APIGateway&gt;&gt;&lt;br/&gt;Cổng dịch vụ"
+                participant Auth as "&lt;&lt;AuthService&gt;&gt;&lt;br/&gt;Xử lý xác thực"
+                participant DB as "&lt;&lt;Database&gt;&gt;&lt;br/&gt;CSDL Người dùng"
+            
+                U->>FE: 1. Click "Đăng ký"
+                FE-->>U: 2. Hiển thị Form
+                U->>FE: 3. Nhập Info & Submit
+                FE->>Gateway: POST /register
+                Gateway->>Auth: Forward Request
+                activate Auth
+                Auth->>DB: Check Email Exists
+                activate DB
+                alt Email Exists
+                    DB-->>Auth: True (Found)
+                    Auth-->>FE: Error: Conflict
+                    FE-->>U: Hiển thị lỗi
+                else Valid Email
+                    DB-->>Auth: False
+                    Auth->>Auth: Hash Password
+                    Auth->>DB: Save User
+                    DB-->>Auth: Success
+                    deactivate DB
+                    Auth-->>FE: Success 201
+                    FE-->>U: Thông báo & Redirect Login
+                end
+                deactivate Auth
+            </div>
+        </div>
+
+        <br>
+
+        <!-- 2. Đăng nhập -->
+        <h2>2.2. Đăng nhập hệ thống</h2>
+        <table class="uc-table">
+            <tr>
+                <th>Mã Use case</th>
+                <td colspan="3">UC_DangNhap</td>
+                <th>Tên Use case</th>
+                <td colspan="3">Đăng nhập</td>
+            </tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td colspan="7">Khách hàng, Quản trị viên (Admin)</td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td colspan="7">Người dùng đăng nhập vào hệ thống để truy cập các chức năng cá nhân hóa hoặc quản trị.</td>
+            </tr>
+            <tr>
+                <th>Sự kiện kích hoạt</th>
+                <td colspan="7">Người dùng mở ứng dụng hoặc truy cập vào trang yêu cầu xác thực.</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td colspan="7">Người dùng đã có tài khoản được kích hoạt trên hệ thống.</td>
+            </tr>
+            <tr>
+                <th rowspan="2">Luồng sự kiện chính</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 20%">Thực hiện bởi</th>
+                            <th>Hành động</th>
+                        </tr>
+                        <tr>
+                            <td align="center">1</td>
+                            <td>Người dùng</td>
+                            <td>Nhập Email và Mật khẩu, nhấn nút "Đăng nhập".</td>
+                        </tr>
+                        <tr>
+                            <td align="center">2</td>
+                            <td>Hệ thống</td>
+                            <td>Gửi yêu cầu xác thực đến Auth Service.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">3</td>
+                            <td>Hệ thống</td>
+                            <td>Kiểm tra thông tin đăng nhập trong Cơ sở dữ liệu.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">4</td>
+                            <td>Hệ thống</td>
+                            <td>Tạo JWT Token và trả về cho phía Client nếu thông tin chính xác.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">5</td>
+                            <td>Người dùng</td>
+                            <td>Được điều hướng vào Trang chủ (Khách) hoặc Dashboard (Admin).</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <th>Luồng sự kiện thay thế</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <td align="center" style="width: 5%">3a</td>
+                            <td style="width: 20%">Hệ thống</td>
+                            <td>Nếu sai Email hoặc Mật khẩu, hiển thị thông báo "Tài khoản hoặc mật khẩu không chính xác". Quay lại bước 1.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <th>Hậu điều kiện</th>
+                <td colspan="7">Người dùng nhận được Access Token, phiên làm việc bắt đầu.</td>
+            </tr>
+        </table>
+
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 2.2. Biểu đồ tuần tự chức năng Đăng nhập</div>
+            <div class="mermaid">
+                sequenceDiagram
+                autonumber
+                actor U as Người dùng
+                participant FE as "&lt;&lt;LoginUI&gt;&gt;&lt;br/&gt;Giao diện Đăng nhập"
+                participant Auth as "&lt;&lt;AuthService&gt;&gt;&lt;br/&gt;Xử lý xác thực"
+                participant DB as "&lt;&lt;Database&gt;&gt;&lt;br/&gt;CSDL Người dùng"
+            
+                U->>FE: Nhập Email/Pass
+                FE->>Auth: Login Request
+                activate Auth
+                Auth->>DB: Find User
+                activate DB
+                alt Not Found / Wrong Pass
+                    DB-->>Auth: Invalid
+                    Auth-->>FE: 401 Unauthorized
+                    FE-->>U: Báo lỗi đăng nhập
+                else Valid Credentials
+                    DB-->>Auth: User Data
+                    Auth->>Auth: Generate Token
+                    Auth-->>FE: 200 OK + Token
+                    FE-->>U: Redirect Home/Dashboard
+                end
+                deactivate DB
+                deactivate Auth
+            </div>
+        </div>
+
+        <br>
+
+        <!-- 3. Xem Menu -->
+        <h2>2.3. Xem danh sách sản phẩm (Thực đơn)</h2>
+        <table class="uc-table">
+            <tr>
+                <th>Mã Use case</th>
+                <td colspan="3">UC_XemMenu</td>
+                <th>Tên Use case</th>
+                <td colspan="3">Xem thực đơn</td>
+            </tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td colspan="7">Khách hàng (Vãng lai hoặc đã đăng nhập)</td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td colspan="7">Người dùng xem danh sách các món ăn, tìm kiếm và lọc món ăn theo danh mục.</td>
+            </tr>
+            <tr>
+                <th>Sự kiện kích hoạt</th>
+                <td colspan="7">Người dùng truy cập vào trang chủ hoặc trang "Thực đơn".</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td colspan="7">Hệ thống đang hoạt động bình thường, dữ liệu món ăn đã có.</td>
+            </tr>
+            <tr>
+                <th rowspan="2">Luồng sự kiện chính</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 20%">Thực hiện bởi</th>
+                            <th>Hành động</th>
+                        </tr>
+                        <tr>
+                            <td align="center">1</td>
+                            <td>Người dùng</td>
+                            <td>Truy cập vào giao diện Thực đơn.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">2</td>
+                            <td>Hệ thống</td>
+                            <td>Gửi yêu cầu lấy danh sách Danh mục và Món ăn từ Menu Service.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">3</td>
+                            <td>Hệ thống</td>
+                            <td>Hiển thị danh sách món ăn với hình ảnh, tên và giá tiền.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">4</td>
+                            <td>Người dùng</td>
+                            <td>Có thể nhập từ khóa tìm kiếm hoặc chọn danh mục để lọc.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">5</td>
+                            <td>Hệ thống</td>
+                            <td>Cập nhật danh sách hiển thị theo điều kiện lọc của người dùng.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <th>Luồng sự kiện thay thế</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <td align="center" style="width: 5%">3a</td>
+                            <td style="width: 20%">Hệ thống</td>
+                            <td>Nếu không tải được dữ liệu, hiển thị thông báo "Không thể tải thực đơn lúc này" và nút Thử lại.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <th>Hậu điều kiện</th>
+                <td colspan="7">Danh sách món ăn được hiển thị chi tiết cho người dùng.</td>
+            </tr>
+        </table>
+
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 2.3. Biểu đồ tuần tự chức năng Xem thực đơn</div>
+            <div class="mermaid">
+                sequenceDiagram
+                autonumber
+                actor U as Khách hàng
+                participant FE as "&lt;&lt;MenuUI&gt;&gt;&lt;br/&gt;Giao diện Thực đơn"
+                participant Menu as "&lt;&lt;MenuService&gt;&gt;&lt;br/&gt;Quản lý món ăn"
+                participant DB as "&lt;&lt;Database&gt;&gt;&lt;br/&gt;CSDL Món ăn"
+            
+                U->>FE: Vào trang Menu
+                activate FE
+                par Fetch Data
+                    FE->>Menu: Get Categories
+                    activate Menu
+                    Menu->>DB: Query Categories
+                    activate DB
+                    DB-->>Menu: Data
+                    deactivate DB
+                    Menu-->>FE: List Categories
+                    deactivate Menu
+                and Fetch Products
+                    FE->>Menu: Get Products
+                    activate Menu
+                    Menu->>DB: Query Products
+                    activate DB
+                    DB-->>Menu: Data
+                    deactivate DB
+                    Menu-->>FE: List Products
+                    deactivate Menu
+                end
+                FE-->>U: Hiển thị Grid món ăn
+                deactivate FE
+            </div>
+        </div>
+
+        <br>
+
+        <!-- 4. Đặt hàng -->
+        <h2>2.4. Đặt hàng</h2>
+        <table class="uc-table">
+            <tr>
+                <th>Mã Use case</th>
+                <td colspan="3">UC_DatHang</td>
+                <th>Tên Use case</th>
+                <td colspan="3">Đặt hàng (Checkout)</td>
+            </tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td colspan="7">Khách hàng (Đã đăng nhập)</td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td colspan="7">Người dùng thực hiện xác nhận giỏ hàng và tạo đơn hàng mới.</td>
+            </tr>
+            <tr>
+                <th>Sự kiện kích hoạt</th>
+                <td colspan="7">Người dùng nhấn nút "Đặt hàng" tại giỏ hàng.</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td colspan="7">Người dùng đã đăng nhập, giỏ hàng có sản phẩm.</td>
+            </tr>
+            <tr>
+                <th rowspan="2">Luồng sự kiện chính</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 20%">Thực hiện bởi</th>
+                            <th>Hành động</th>
+                        </tr>
+                        <tr>
+                            <td align="center">1</td>
+                            <td>Người dùng</td>
+                            <td>Kiểm tra thông tin giỏ hàng, địa chỉ và nhấn "Xác nhận đặt hàng".</td>
+                        </tr>
+                        <tr>
+                            <td align="center">2</td>
+                            <td>Hệ thống</td>
+                            <td>Tạo đơn hàng mới với trạng thái PENDING (Chờ xử lý).</td>
+                        </tr>
+                        <tr>
+                            <td align="center">3</td>
+                            <td>Hệ thống</td>
+                            <td>Gửi sự kiện đến Inventory Service để kiểm tra và giữ tồn kho.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">4</td>
+                            <td>Hệ thống</td>
+                            <td>Gửi sự kiện đến Notification Service để gửi email xác nhận.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">5</td>
+                            <td>Hệ thống</td>
+                            <td>Thông báo đặt hàng thành công và chuyển sang bước thanh toán.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <th>Luồng sự kiện thay thế</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <td align="center" style="width: 5%">3a</td>
+                            <td style="width: 20%">Hệ thống</td>
+                            <td>Nếu hết hàng (Inventory Failed), hệ thống tự động hủy đơn hàng (CANCELLED) và thông báo cho người dùng.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <th>Hậu điều kiện</th>
+                <td colspan="7">Đơn hàng được lưu vào hệ thống, số lượng tồn kho giảm tạm thời (reserved).</td>
+            </tr>
+        </table>
+
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 2.4. Biểu đồ tuần tự chức năng Đặt hàng</div>
+            <div class="mermaid">
+                sequenceDiagram
+                autonumber
+                actor U as Khách hàng
+                participant FE as "&lt;&lt;CartUI&gt;&gt;&lt;br/&gt;Giao diện Đặt hàng"
+                participant Order as "&lt;&lt;OrderService&gt;&gt;&lt;br/&gt;Xử lý đơn hàng"
+                participant Inv as "&lt;&lt;InventoryService&gt;&gt;&lt;br/&gt;Quản lý kho"
+                participant MQ as "&lt;&lt;MessageQueue&gt;&gt;&lt;br/&gt;RabbitMQ"
+            
+                U->>FE: Nhấn "Đặt hàng"
+                FE->>Order: Create Order Request
+                activate Order
+                Order->>Order: Save PENDING
+                Order->>MQ: Publish "Order Created"
+                Order-->>FE: Success (Order ID)
+                FE-->>U: Thông báo thành công
+                deactivate Order
+                
+                MQ->>Inv: Consume Event
+                activate Inv
+                Inv->>Inv: Check Stock
+                alt Stock Available
+                    Inv->>Inv: Deduct Stock
+                    Inv->>MQ: Publish "Stock Reserved"
+                else Out of Stock
+                    Inv->>MQ: Publish "Stock Failed"
+                    MQ->>Order: Trigger Cancel Order
+                end
+                deactivate Inv
+            </div>
+        </div>
+
+        <br>
+
+        <!-- 5. Thanh toán -->
+        <h2>2.5. Thanh toán trực tuyến</h2>
+        <table class="uc-table">
+            <tr>
+                <th>Mã Use case</th>
+                <td colspan="3">UC_ThanhToan</td>
+                <th>Tên Use case</th>
+                <td colspan="3">Thanh toán đơn hàng</td>
+            </tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td colspan="7">Khách hàng</td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td colspan="7">Người dùng thực hiện thanh toán cho đơn hàng thông qua cổng thanh toán bên thứ 3.</td>
+            </tr>
+            <tr>
+                <th>Sự kiện kích hoạt</th>
+                <td colspan="7">Người dùng chọn phương thức thanh toán và nhấn "Thanh toán".</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td colspan="7">Đơn hàng tồn tại và đang ở trạng thái PENDING hoặc CONFIRMED.</td>
+            </tr>
+            <tr>
+                <th rowspan="2">Luồng sự kiện chính</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 20%">Thực hiện bởi</th>
+                            <th>Hành động</th>
+                        </tr>
+                        <tr>
+                            <td align="center">1</td>
+                            <td>Người dùng</td>
+                            <td>Chọn phương thức thanh toán (ví dụ: VNPay/SePay) tại trang Checkout.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">2</td>
+                            <td>Hệ thống</td>
+                            <td>Tạo URL thanh toán và mã giao dịch từ cổng thanh toán.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">3</td>
+                            <td>Người dùng</td>
+                            <td>Được chuyển hướng sang trang thanh toán, thực hiện quét mã QR/nhập thẻ.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">4</td>
+                            <td>Hệ thống</td>
+                            <td>Nhận Webhook từ cổng thanh toán xác nhận giao dịch thành công.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">5</td>
+                            <td>Hệ thống</td>
+                            <td>Cập nhật trạng thái đơn hàng (PAID/PREPARING) và thông báo cho người dùng.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <th>Luồng sự kiện thay thế</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <td align="center" style="width: 5%">4a</td>
+                            <td style="width: 20%">Hệ thống</td>
+                            <td>Nếu thanh toán thất bại hoặc timeout, trạng thái đơn hàng giữ nguyên hoặc chuyển về PAYMENT_FAILED.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <th>Hậu điều kiện</th>
+                <td colspan="7">Giao dịch được ghi nhận, đơn hàng sẵn sàng để quán chuẩn bị.</td>
+            </tr>
+        </table>
+        
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 2.5. Biểu đồ tuần tự chức năng Thanh toán</div>
+            <div class="mermaid">
+                sequenceDiagram
+                autonumber
+                actor U as Khách hàng
+                participant FE as "&lt;&lt;CheckoutUI&gt;&gt;&lt;br/&gt;Trang Thanh toán"
+                participant Pay as "&lt;&lt;PaymentService&gt;&gt;&lt;br/&gt;Xử lý thanh toán"
+                participant GW as "&lt;&lt;PaymentGateway&gt;&gt;&lt;br/&gt;Cổng (VNPay/SePay)"
+                participant Order as "&lt;&lt;OrderService&gt;&gt;&lt;br/&gt;Quản lý đơn hàng"
+            
+                U->>FE: Chọn Thanh toán
+                FE->>Pay: Create Payment URL
+                activate Pay
+                Pay->>GW: Request Transaction
+                GW-->>Pay: Payment URL
+                Pay-->>FE: Return URL
+                deactivate Pay
+                FE-->>U: Redirect to Banking App
+                
+                U->>GW: Scan QR & Confirm
+                GW->>Pay: Webhook: Payment Success
+                activate Pay
+                Pay->>Order: Update Status -> PREPARING
+                deactivate Pay
+            </div>
+        </div>
+
+        <!-- 6. Xem lịch sử đơn hàng -->
+        <h2>2.6. Xem lịch sử đơn hàng</h2>
+        <table class="uc-table">
+            <tr>
+                <th>Mã Use case</th>
+                <td colspan="3">UC_LichSuDonHang</td>
+                <th>Tên Use case</th>
+                <td colspan="3">Xem lịch sử đơn hàng</td>
+            </tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td colspan="7">Khách hàng</td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td colspan="7">Khách hàng xem lại danh sách và trạng thái các đơn hàng đã đặt.</td>
+            </tr>
+            <tr>
+                <th>Sự kiện kích hoạt</th>
+                <td colspan="7">Người dùng chọn mục "Đơn hàng của tôi".</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td colspan="7">Người dùng đã đăng nhập.</td>
+            </tr>
+            <tr>
+                <th rowspan="2">Luồng sự kiện chính</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 20%">Thực hiện bởi</th>
+                            <th>Hành động</th>
+                        </tr>
+                        <tr>
+                            <td align="center">1</td>
+                            <td>Người dùng</td>
+                            <td>Chọn menu "Lịch sử đơn hàng".</td>
+                        </tr>
+                        <tr>
+                            <td align="center">2</td>
+                            <td>Hệ thống</td>
+                            <td>Truy vấn tất cả đơn hàng thuộc về user hiện tại, sắp xếp theo thời gian mới nhất.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">3</td>
+                            <td>Hệ thống</td>
+                            <td>Hiển thị danh sách đơn hàng kèm trạng thái (Chờ xác nhận, Đang giao, Hoàn thành...).</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr></tr>
+             <tr>
+                <th>Luồng sự kiện thay thế</th>
+                <td colspan="7">Không có.</td>
+            </tr>
+            <tr>
+                <th>Hậu điều kiện</th>
+                <td colspan="7">Danh sách đơn hàng được hiển thị.</td>
+            </tr>
+        </table>
+        
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 2.6. Biểu đồ tuần tự chức năng Xem Lịch sử đơn</div>
+            <div class="mermaid">
+                sequenceDiagram
+                autonumber
+                actor U as Khách hàng
+                participant FE as "&lt;&lt;HistoryUI&gt;&gt;&lt;br/&gt;Giao diện Lịch sử"
+                participant Order as "&lt;&lt;OrderService&gt;&gt;&lt;br/&gt;Quản lý đơn hàng"
+                participant DB as "&lt;&lt;Database&gt;&gt;&lt;br/&gt;CSDL Đơn hàng"
+            
+                U->>FE: Xem "Đơn hàng của tôi"
+                activate FE
+                FE->>Order: GET /my-orders
+                activate Order
+                Order->>DB: Find By UserID (DESC)
+                activate DB
+                DB-->>Order: List Orders
+                deactivate DB
+                Order-->>FE: JSON Data
+                deactivate Order
+                FE-->>U: Hiển thị danh sách card
+                deactivate FE
+            </div>
+        </div>
+        
+        <br>
+
+        <!-- 7. Hủy đơn hàng -->
+        <h2>2.7. Hủy đơn hàng</h2>
+        <table class="uc-table">
+            <tr>
+                <th>Mã Use case</th>
+                <td colspan="3">UC_HuyDonHang</td>
+                <th>Tên Use case</th>
+                <td colspan="3">Khách hàng hủy đơn</td>
+            </tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td colspan="7">Khách hàng</td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td colspan="7">Cho phép khách hàng tự hủy đơn hàng nếu đơn chưa được quán xử lý.</td>
+            </tr>
+            <tr>
+                <th>Sự kiện kích hoạt</th>
+                <td colspan="7">Người dùng nhấn nút "Hủy đơn" trên chi tiết đơn hàng.</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td colspan="7">Đơn hàng ở trạng thái PENDING.</td>
+            </tr>
+            <tr>
+                <th rowspan="2">Luồng sự kiện chính</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 20%">Thực hiện bởi</th>
+                            <th>Hành động</th>
+                        </tr>
+                        <tr>
+                            <td align="center">1</td>
+                            <td>Người dùng</td>
+                            <td>Chọn một đơn hàng trạng thái "Chờ xử lý" và nhấn Hủy.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">2</td>
+                            <td>Hệ thống</td>
+                            <td>Kiểm tra điều kiện: Trạng thái hiện tại có phải là PENDING không?</td>
+                        </tr>
+                        <tr>
+                            <td align="center">3</td>
+                            <td>Hệ thống</td>
+                            <td>Cập nhật trạng thái đơn hàng sang CANCELLED.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">4</td>
+                            <td>Hệ thống</td>
+                            <td>Hoàn lại số lượng tồn kho (Re-stock) cho các sản phẩm trong đơn.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">5</td>
+                            <td>Hệ thống</td>
+                            <td>Thông báo hủy thành công.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <th>Luồng sự kiện thay thế</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <td align="center" style="width: 5%">2a</td>
+                            <td style="width: 20%">Hệ thống</td>
+                            <td>Nếu đơn hàng đã chuyển sang "Đang chuẩn bị" hoặc "Đang giao", hiển thị lỗi "Không thể hủy đơn hàng này".</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <th>Hậu điều kiện</th>
+                <td colspan="7">Đơn hàng bị hủy, hàng tồn kho được phục hồi.</td>
+            </tr>
+        </table>
+
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 2.7. Biểu đồ tuần tự chức năng Hủy đơn hàng</div>
+            <div class="mermaid">
+                sequenceDiagram
+                autonumber
+                actor U as Khách hàng
+                participant FE as "&lt;&lt;OrderDetailUI&gt;&gt;&lt;br/&gt;Chi tiết đơn hàng"
+                participant Order as "&lt;&lt;OrderService&gt;&gt;&lt;br/&gt;Quản lý đơn hàng"
+                participant Inv as "&lt;&lt;InventoryService&gt;&gt;&lt;br/&gt;Quản lý kho"
+            
+                U->>FE: Nhấn "Hủy đơn"
+                FE->>Order: Request Cancel
+                activate Order
+                Order->>Order: Check Status == PENDING?
+                alt Valid
+                    Order->>Order: Update CANCELLED
+                    Order->>Inv: Event: Order Cancelled
+                    activate Inv
+                    Inv->>Inv: Re-stock Items
+                    deactivate Inv
+                    Order-->>FE: Success
+                    FE-->>U: Thông báo đã hủy
+                else Invalid
+                    Order-->>FE: Error (Too late)
+                    FE-->>U: "Không thể hủy đơn này"
+                end
+                deactivate Order
+            </div>
+        </div>
+
+        <!-- 8. Quản lý Menu (Admin) -->
+         <h2>2.8. Quản lý thực đơn (Admin)</h2>
+        <table class="uc-table">
+            <tr>
+                <th>Mã Use case</th>
+                <td colspan="3">UC_QuanLyMenu</td>
+                <th>Tên Use case</th>
+                <td colspan="3">Thêm món ăn mới</td>
+            </tr>
+            <tr>
+                <th>Tác nhân</th>
+                <td colspan="7">Quản trị viên (Admin)</td>
+            </tr>
+            <tr>
+                <th>Mô tả</th>
+                <td colspan="7">Admin thêm món ăn mới vào hệ thống.</td>
+            </tr>
+             <tr>
+                <th>Sự kiện kích hoạt</th>
+                <td colspan="7">Admin nhấn "Thêm món ăn" trong trang quản trị.</td>
+            </tr>
+            <tr>
+                <th>Tiền điều kiện</th>
+                <td colspan="7">Đã đăng nhập với quyền Admin.</td>
+            </tr>
+            <tr>
+                <th rowspan="2">Luồng sự kiện chính</th>
+                <td colspan="7" style="padding: 0;">
+                    <table class="flow-table">
+                        <tr>
+                            <th style="width: 5%">#</th>
+                            <th style="width: 20%">Thực hiện bởi</th>
+                            <th>Hành động</th>
+                        </tr>
+                         <tr>
+                            <td align="center">1</td>
+                            <td>Admin</td>
+                            <td>Nhập tên món, giá, mô tả và tải lên hình ảnh. Nhấn Lưu.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">2</td>
+                            <td>Hệ thống</td>
+                            <td>Validate dữ liệu đầu vào.</td>
+                        </tr>
+                        <tr>
+                            <td align="center">3</td>
+                            <td>Hệ thống</td>
+                            <td>Lưu thông tin món ăn vào Database.</td>
+                        </tr>
+                         <tr>
+                            <td align="center">4</td>
+                            <td>Hệ thống</td>
+                            <td>Cập nhật danh sách hiển thị và thông báo thành công.</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr></tr>
+            <tr>
+                <th>Luồng sự kiện thay thế</th>
+                <td colspan="7">Nếu dữ liệu không hợp lệ (thiếu tên, giá âm...), báo lỗi yêu cầu nhập lại.</td>
+            </tr>
+            <tr>
+                <th>Hậu điều kiện</th>
+                <td colspan="7">Món ăn mới xuất hiện trên thực đơn của khách hàng.</td>
+            </tr>
+        </table>
+        
+        <div class="diagram-container">
+            <div class="diagram-title">Hình 2.8. Biểu đồ tuần tự chức năng Thêm món ăn</div>
+            <div class="mermaid">
+                sequenceDiagram
+                autonumber
+                actor A as Admin
+                participant FE as "&lt;&lt;AdminUI&gt;&gt;&lt;br/&gt;Quản trị món ăn"
+                participant Menu as "&lt;&lt;MenuService&gt;&gt;&lt;br/&gt;Dịch vụ Menu"
+                participant DB as "&lt;&lt;Database&gt;&gt;&lt;br/&gt;CSDL Món ăn"
+            
+                A->>FE: Nhập liệu & Bấm Lưu
+                FE->>Menu: POST /admin/products
+                activate Menu
+                Menu->>Menu: Validate Input
+                Menu->>DB: Save Product
+                activate DB
+                DB-->>Menu: Saved Entity
+                deactivate DB
+                Menu-->>FE: Success 201
+                deactivate Menu
+                FE-->>A: Thông báo thành công
+            </div>
+        </div>
+
+    <br><hr><br>
+        <!-- 3. Test API Section (Moved to Bottom) -->
+        <h2>3. Minh họa Kiểm thử API (Giao diện Postman)</h2>
+        <style>
+            .postman-container {
+                background-color: #212121;
+                color: #e0e0e0;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                border-radius: 4px;
+                margin-bottom: 30px;
+                overflow: hidden;
+                border: 1px solid #444;
+                font-size: 13px;
+                text-align: left;
+            }
+            .pm-header { background-color: #2e2e2e; padding: 10px; border-bottom: 1px solid #444; display: flex; align-items: center; }
+            .pm-method { font-weight: bold; padding-right: 10px; }
+            .pm-method.POST { color: #f2c037; }
+            .pm-method.GET { color: #0f0; }
+            .pm-method.PATCH { color: #bcaaa4; }
+            .pm-url { flex-grow: 1; background-color: #1c1c1c; padding: 6px; border: 1px solid #444; border-radius: 4px; color: #fff; }
+            .pm-btn { background-color: #0277bd; color: white; border: none; padding: 6px 15px; margin-left: 10px; border-radius: 4px; font-weight: bold; }
+            .pm-body { display: flex; min-height: 200px; }
+            .pm-req, .pm-res { width: 50%; padding: 10px; }
+            .pm-req { border-right: 1px solid #444; }
+            .pm-label { color: #9e9e9e; font-size: 11px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+            .pm-code { font-family: 'Consolas', 'Monaco', monospace; color: #a9b7c6; white-space: pre; }
+            .pm-key { color: #d19a66; } .pm-string { color: #98c379; } .pm-number { color: #61afef; }
+            .pm-status { float: right; color: #98c379; font-weight: bold; }
+        </style>
+
+        <div class="postman-container">
+            <div class="pm-header"><span class="pm-method POST">POST</span><span class="pm-url">http://localhost:8080/api/auth/login</span><button class="pm-btn">Send</button></div>
+            <div class="pm-body">
+                <div class="pm-req"><div class="pm-label">Body (raw JSON)</div><div class="pm-code">{
+    <span class="pm-key">"username"</span>: <span class="pm-string">"nguyenvanuser"</span>,
+    <span class="pm-key">"password"</span>: <span class="pm-string">"123456"</span>
+}</div></div>
+                <div class="pm-res"><div class="pm-label">Response <span class="pm-status">200 OK</span></div><div class="pm-code">{
+    <span class="pm-key">"token"</span>: <span class="pm-string">"eyJhbGciOiJIUzI1NiIsIn..."</span>,
+    <span class="pm-key">"type"</span>: <span class="pm-string">"Bearer"</span>
+}</div></div>
+            </div>
+        </div>
+
+        <div class="postman-container">
+            <div class="pm-header"><span class="pm-method POST">POST</span><span class="pm-url">http://localhost:8080/api/orders</span><button class="pm-btn">Send</button></div>
+            <div class="pm-body">
+                <div class="pm-req"><div class="pm-label">Body (raw JSON)</div><div class="pm-code">{
+    <span class="pm-key">"items"</span>: [{ <span class="pm-key">"productId"</span>: <span class="pm-number">1</span>, <span class="pm-key">"quantity"</span>: <span class="pm-number">2</span> }],
+    <span class="pm-key">"paymentMethod"</span>: <span class="pm-string">"COD"</span>
+}</div></div>
+                <div class="pm-res"><div class="pm-label">Response <span class="pm-status">200 OK</span></div><div class="pm-code">{
+    <span class="pm-key">"id"</span>: <span class="pm-number">205</span>,
+    <span class="pm-key">"status"</span>: <span class="pm-string">"PENDING"</span>
+}</div></div>
+            </div>
+        </div>
+
+        <div class="postman-container">
+            <div class="pm-header"><span class="pm-method PATCH" style="color: #ffb74d;">PATCH</span><span class="pm-url">http://localhost:8080/api/orders/205/status</span><button class="pm-btn">Send</button></div>
+            <div class="pm-body">
+                <div class="pm-req"><div class="pm-label">Body (raw JSON)</div><div class="pm-code">{ <span class="pm-key">"status"</span>: <span class="pm-string">"CANCELLED"</span> }</div></div>
+                <div class="pm-res"><div class="pm-label">Response <span class="pm-status">200 OK</span></div><div class="pm-code">{
+    <span class="pm-key">"id"</span>: <span class="pm-number">205</span>,
+    <span class="pm-key">"status"</span>: <span class="pm-string">"CANCELLED"</span>
+}</div></div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

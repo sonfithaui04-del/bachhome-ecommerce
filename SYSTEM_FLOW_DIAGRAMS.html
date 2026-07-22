@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sơ Đồ Luồng Hệ Thống Food Ordering</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Mermaid JS for diagrams -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+    </script>
+    <style>
+        .diagram-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+        .section-title {
+            color: #1a202c;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans leading-relaxed p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-blue-700 mb-2">HỆ THỐNG ĐẶT MÓN ĂN - TÀI LIỆU KỸ THUẬT</h1>
+            <p class="text-xl text-gray-600">Mô tả luồng xử lý chi tiết & Tương tác Microservices</p>
+        </header>
+
+        <!-- NỘI DUNG CHÍNH -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            
+            <!-- SIDEBAR NAV -->
+            <div class="lg:col-span-1">
+                <div class="sticky top-8 bg-white p-4 rounded shadow">
+                    <h3 class="font-bold text-lg mb-4 border-b pb-2">Mục Lục</h3>
+                    <ul class="space-y-2 text-sm text-blue-600">
+                        <li><a href="#architecture" class="hover:underline">1. Kiến Trúc Tổng Quan</a></li>
+                        <li><a href="#auth-flow" class="hover:underline">2. Xác Thực & Người Dùng</a></li>
+                        <li><a href="#menu-flow" class="hover:underline">3. Xem Thực Đơn & Tìm Kiếm</a></li>
+                        <li><a href="#order-flow" class="hover:underline">4. Đặt Hàng (Core Flow)</a></li>
+                        <li><a href="#payment-flow" class="hover:underline">5. Thanh Toán Online</a></li>
+                        <li><a href="#ops-flow" class="hover:underline">6. Xử Lý Đơn Hàng (Staff)</a></li>
+                        <li><a href="#summary" class="hover:underline">7. Tổng Hợp Service</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- MAIN CONTENT -->
+            <div class="lg:col-span-3">
+
+                <!-- 1. KIẾN TRÚC -->
+                <section id="architecture">
+                    <h2 class="text-3xl font-bold section-title">1. Kiến Trúc Tổng Quan</h2>
+                    <p class="mb-4">Hệ thống áp dụng kiến trúc <strong>Microservices</strong> với các đặc điểm kỹ thuật:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div class="bg-white p-4 rounded shadow border-l-4 border-blue-500">
+                            <h4 class="font-bold">Giao Tiếp Đồng Bộ (REST)</h4>
+                            <p class="text-sm text-gray-600">Dùng cho các tác vụ cần phản hồi ngay lập tức (Login, Get Menu, Get Order Details).</p>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow border-l-4 border-purple-500">
+                            <h4 class="font-bold">Giao Tiếp Bất Đồng Bộ (Event-Driven)</h4>
+                            <p class="text-sm text-gray-600">Dùng RabbitMQ để xử lý tác vụ nền: Trừ kho, Gửi Email, Update Dashboard (Non-blocking I/O).</p>
+                        </div>
+                    </div>
+
+                    <div class="diagram-container">
+                        <pre class="mermaid">
+graph TB
+    Client[Web Client / Admin Dashboard]
+    Gateway[API Gateway :8080]
+    Eureka[Eureka Registry :8761]
+    Rabbit[RabbitMQ Broker :5672]
+
+    subgraph "Service Layer"
+        Auth[Service Auth :8081]
+        Menu[Service Menu :8082]
+        Order[Service Order :8083]
+        Payment[Service Payment :8084]
+        Inventory[Service Inventory :8085]
+        Noti[Service Notification :8086]
+        Socket[Service Socket :8089]
+    end
+
+    Client -->|REST| Gateway
+    Gateway -->|Discovery| Eureka
+    
+    Gateway -->|/auth| Auth
+    Gateway -->|/menu| Menu
+    Gateway -->|/orders| Order
+    Gateway -->|/payment| Payment
+
+    %% Event Flows
+    Order -.->|OrderCreated| Rabbit
+    Payment -.->|PaymentSuccess| Rabbit
+    Inventory -.->|StockFailed| Rabbit
+
+    Rabbit -.->|Consume| Inventory
+    Rabbit -.->|Consume| Noti
+    Rabbit -.->|Consume| Socket
+    Rabbit -.->|Consume| Order
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- 2. AUTHENTICATION -->
+                <section id="auth-flow">
+                    <h2 class="text-3xl font-bold section-title">2. Xác Thực & Người Dùng</h2>
+                    
+                    <div class="mb-8">
+                        <h3 class="font-bold text-xl mb-2 text-blue-700">A. Đăng Ký (UC_DangKy)</h3>
+                        <p class="mb-4">Hệ thống kiểm tra trùng lặp Email trước khi tạo tài khoản. Mật khẩu được mã hóa bằng BCrypt.</p>
+                        <div class="diagram-container">
+                            <pre class="mermaid">
+sequenceDiagram
+    actor U as Người dùng
+    participant GW as API Gateway
+    participant Auth as Service Auth
+    participant DB as Auth DB
+
+    U->>GW: POST /api/auth/register
+    GW->>Auth: Forward Request
+    Auth->>DB: Check Email Exists?
+    alt Email Exists
+        DB-->>Auth: True
+        Auth-->>U: 409 Conflict
+    else Email Valid
+        Auth->>Auth: Hash Password
+        Auth->>DB: Save User
+        Auth-->>U: 201 Created
+    end
+                            </pre>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-bold text-xl mb-2 text-blue-700">B. Đăng Nhập (UC_DangNhap)</h3>
+                        <p class="mb-4">Sử dụng cơ chế <strong>JWT (JSON Web Token)</strong>. Client lưu token và gửi kèm trong header của mọi request sau đó.</p>
+                        <div class="diagram-container">
+                            <pre class="mermaid">
+sequenceDiagram
+    actor U as Người dùng
+    participant Auth as Service Auth
+    participant DB as Auth DB
+
+    U->>Auth: POST /api/auth/login
+    Auth->>DB: Find User
+    DB-->>Auth: User Data
+    Auth->>Auth: Verify Password
+    alt Valid
+        Auth->>Auth: Generate JWT Token
+        Auth-->>U: 200 OK + Token
+    else Invalid
+        Auth-->>U: 401 Unauthorized
+    end
+                            </pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. MENU -->
+                <section id="menu-flow">
+                    <h2 class="text-3xl font-bold section-title">3. Xem Thực Đơn & Tìm Kiếm</h2>
+                    <p class="mb-4"><code class="bg-gray-200 px-1 rounded">UC_XemMenu</code>: Client load song song danh mục và danh sách món ăn để tối ưu tốc độ hiển thị.</p>
+                    <div class="diagram-container">
+                        <pre class="mermaid">
+sequenceDiagram
+    actor U as Khách hàng
+    participant GW as API Gateway
+    participant Menu as Service Menu
+    participant DB as Menu DB
+
+    par Load Categories
+        U->>GW: GET /api/categories
+        GW->>Menu: Forward
+        Menu->>DB: Select All Categories
+        DB-->>Menu: List Categories
+        Menu-->>U: JSON Categories
+    and Load Products
+        U->>GW: GET /api/menu?page=0
+        GW->>Menu: Forward
+        Menu->>DB: Select Products (Paged)
+        DB-->>Menu: List Products
+        Menu-->>U: JSON Products
+    end
+
+    opt Search
+        U->>GW: GET /api/menu/search?q=Pizza
+        GW->>Menu: Search
+        Menu->>DB: ILIKE %Pizza%
+        Menu-->>U: Search Results
+    end
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- 4. ORDER (CORE) -->
+                <section id="order-flow">
+                    <h2 class="text-3xl font-bold section-title">4. Quy Trình Đặt Hàng (Event-Driven)</h2>
+                    <p class="mb-4">Đây là quy trình phức tạp nhất. <strong>Service Order</strong> chỉ lưu trạng thái PENDING và trả về ngay để khách không phải chờ. Các việc nặng (Trừ kho, Gửi mail) chạy ngầm qua <strong>RabbitMQ</strong>.</p>
+                    
+                    <div class="diagram-container">
+                        <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor U as Khách hàng
+    participant Order as Order Svc
+    participant MQ as RabbitMQ
+    participant Inv as Inventory Svc
+    participant Noti as Notification Svc
+
+    U->>Order: POST /api/orders (Checkout)
+    Order->>Order: Validate & Save (PENDING)
+    Order->>MQ: Publish "order.created"
+    Order-->>U: 201 Created
+    
+    par Inventory Process (Async)
+        MQ->>Inv: Consume Event
+        Inv->>Inv: Check & Deduct Stock
+        alt Success
+            Inv->>MQ: Publish "stock.success"
+        else Out of Stock
+            Inv->>MQ: Publish "stock.failed"
+            MQ->>Order: Update Order -> CANCELLED
+            Order-->>Noti: Trigger "Order Failed" Email
+        end
+    and Notification (Async)
+        MQ->>Noti: Consume Event
+        Noti->>U: Send Email "Order Confirmation"
+    end
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- 5. PAYMENT -->
+                <section id="payment-flow">
+                    <h2 class="text-3xl font-bold section-title">5. Thanh Toán Trực Tuyến</h2>
+                    <p class="mb-4">Tích hợp cổng thanh toán (SePay/VNPay mock). Sử dụng cơ chế <strong>Webhook (IPN)</strong> để cập nhật trạng thái đơn hàng một cách an toàn.</p>
+                    <div class="diagram-container">
+                        <pre class="mermaid">
+sequenceDiagram
+    actor U as Khách hàng
+    participant Pay as Payment Svc
+    participant TP as Payment Gateway
+    participant Order as Order Svc
+
+    U->>Pay: Request Pay URL
+    Pay->>TP: Create Payment Link
+    TP-->>U: Redirect to Bank App
+
+    U->>TP: Transfer Money
+    
+    par Webhook (Server-to-Server)
+        TP->>Pay: Notify: Payment Success
+        Pay->>Pay: Validate Transaction
+        Pay->>Order: Calls API: Update Status -> PAID
+        Order-->>Pay: OK
+    end
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- 6. OPERATIONS (STAFF) -->
+                <section id="ops-flow">
+                    <h2 class="text-3xl font-bold section-title">6. Xử Lý Đơn Hàng (Staff)</h2>
+                    <p class="mb-4"><code class="bg-gray-200 px-1 rounded">UC_QuanLyDon</code>: Khi nhân viên cập nhật trạng thái đơn (ví dụ: Đang giao), hệ thống sẽ gửi thông báo Realtime cho khách.</p>
+                    <div class="diagram-container">
+                        <pre class="mermaid">
+sequenceDiagram
+    actor S as Nhân Viên
+    participant Admin as Admin Dashboard
+    participant Order as Service Order
+    participant MQ as RabbitMQ
+    actor C as Khách hàng
+
+    S->>Admin: Click "Giao Hàng"
+    Admin->>Order: PATCH /api/orders/{id}/status (DELIVERING)
+    Order->>Order: Update DB
+    Order->>MQ: Publish "order.status_change"
+    Order-->>Admin: Success
+    
+    MQ->>C: Push Notification: "Đơn đang giao!"
+                        </pre>
+                    </div>
+                </section>
+
+                <!-- 7. SUMMARY TABLE -->
+                <section id="summary">
+                    <h2 class="text-3xl font-bold section-title">7. Tổng Hợp Service & Trách Nhiệm</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-300 shadow-sm rounded-lg">
+                            <thead class="bg-gray-800 text-white">
+                                <tr>
+                                    <th class="py-3 px-4 text-left">Service</th>
+                                    <th class="py-3 px-4 text-left">Chức Năng Chính</th>
+                                    <th class="py-3 px-4 text-left">Giao Tiếp Chính</th>
+                                    <th class="py-3 px-4 text-left">Port</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 text-sm">
+                                <tr>
+                                    <td class="font-bold py-3 px-4">API Gateway</td>
+                                    <td>Cổng vào, định tuyến, bảo mật JWT</td>
+                                    <td>REST</td>
+                                    <td>8080</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold py-3 px-4">Service Auth</td>
+                                    <td>Đăng ký, Đăng nhập, Profile</td>
+                                    <td>REST</td>
+                                    <td>8081</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold py-3 px-4">Service Menu</td>
+                                    <td>Quản lý món ăn, danh mục, tìm kiếm</td>
+                                    <td>REST</td>
+                                    <td>8082</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold py-3 px-4">Service Order</td>
+                                    <td>Tạo đơn, quản lý trạng thái đơn</td>
+                                    <td>REST / <span class="text-orange-600 font-bold">MQ Producer</span></td>
+                                    <td>8083</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold py-3 px-4">Service Payment</td>
+                                    <td>Xử lý thanh toán, Webhook</td>
+                                    <td>REST / <span class="text-orange-600 font-bold">MQ Producer</span></td>
+                                    <td>8084</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold py-3 px-4">Service Inventory</td>
+                                    <td>Quản lý tồn kho, công thức</td>
+                                    <td><span class="text-purple-600 font-bold">MQ Consumer</span></td>
+                                    <td>8085</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-bold py-3 px-4">Service Notification</td>
+                                    <td>Gửi Email, SMS</td>
+                                    <td><span class="text-purple-600 font-bold">MQ Consumer</span></td>
+                                    <td>8086</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <footer class="mt-12 text-center text-gray-500 text-sm pb-8 border-t pt-8">
+                    <p>Food Ordering Microservices Architecture Documentation © 2025</p>
+                </footer>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

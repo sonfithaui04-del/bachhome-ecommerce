@@ -1,0 +1,125 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        # Auth Service Routes
+        - id: service-auth
+          uri: lb://SERVICE-AUTH
+          predicates:
+            - Path=/api/auth/**, /api/users/**
+          filters:
+            - StripPrefix=1
+
+        # Menu Service Routes
+        - id: service-menu
+          uri: lb://SERVICE-MENU
+          predicates:
+            - Path=/api/menu/**, /api/categories/**
+          filters:
+            - StripPrefix=1
+
+        # Order Service Routes
+        - id: service-order
+          uri: lb://SERVICE-ORDER
+          predicates:
+            - Path=/api/orders/**
+          filters:
+            - StripPrefix=1
+
+        # Inventory Service Routes
+        - id: service-inventory
+          uri: lb://SERVICE-INVENTORY
+          predicates:
+            - Path=/api/inventory/**, /api/ingredients/**, /api/recipes/**
+          filters:
+            - StripPrefix=1
+
+        # Payment Service Routes
+        - id: service-payment
+          uri: lb://SERVICE-PAYMENT
+          predicates:
+            - Path=/api/payments/**
+          filters:
+            - StripPrefix=1
+
+        # Notification Service Routes
+        - id: service-notification
+          uri: lb://SERVICE-NOTIFICATION
+          predicates:
+            - Path=/api/notifications/**, /api/chat/**
+          filters:
+            - StripPrefix=1
+
+
+        # Socket Service Routes (SockJS + WebSocket)
+        - id: service-socket
+          uri: lb://SERVICE-SOCKET
+          predicates:
+            - Path=/ws/**
+          filters:
+            - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+      # Default filters for all routes
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+
+      # Global CORS Configuration
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://localhost:3001"
+              - "http://localhost:3002"
+              - "http://localhost:3003"
+              - "http://localhost:3004"
+              - "http://localhost:3005"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+              - HEAD
+            allowedHeaders: "*"
+            exposedHeaders: "*"
+            allowCredentials: true
+            maxAge: 3600
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://eureka-server:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    reactor.netty: INFO
+  pattern:
+    console: "[%d{yyyy-MM-dd HH:mm:ss}] [%level] [API-GATEWAY] [%X{traceId}] %msg%n"
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
+  endpoint:
+    health:
+      show-details: always
+    gateway:
+      enabled: true

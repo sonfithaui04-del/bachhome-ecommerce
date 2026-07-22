@@ -1,0 +1,8 @@
+# Kubernetes Namespace for Food Ordering System
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: food-ordering
+  labels:
+    app: food-ordering
+    environment: production

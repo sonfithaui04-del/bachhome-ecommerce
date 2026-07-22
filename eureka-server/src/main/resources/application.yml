@@ -1,0 +1,39 @@
+server:
+  port: 8761
+
+spring:
+  application:
+    name: eureka-server
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # Không đăng ký chính nó như một client
+    register-with-eureka: false
+    # Không fetch registry từ server khác
+    fetch-registry: false
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+  server:
+    # Tắt self-preservation mode trong môi trường development
+    enable-self-preservation: false
+    eviction-interval-timer-in-ms: 3000
+
+# Logging configuration
+logging:
+  level:
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO
+  pattern:
+    console: "[%d{yyyy-MM-dd HH:mm:ss}] [%level] [EUREKA-SERVER] %msg%n"
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

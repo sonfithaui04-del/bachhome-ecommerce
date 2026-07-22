@@ -1,0 +1,295 @@
+version: '3.8'
+
+services:
+  # RabbitMQ Message Broker
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - food-ordering-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Eureka Server
+  eureka-server:
+    build:
+      context: ./eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - food-ordering-network
+
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - food-ordering-network
+
+  # Auth Service
+  postgres-auth:
+    image: postgres:15-alpine
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: food_ordering_auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 10112004
+    ports:
+      - "5438:5432"
+    volumes:
+      - postgres-auth-data:/var/lib/postgresql/data
+    networks:
+      - food-ordering-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  service-auth:
+    build:
+      context: ./service-auth
+      dockerfile: Dockerfile
+    container_name: service-auth
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/food_ordering_auth
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 10112004
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    networks:
+      - food-ordering-network
+
+  # Menu Service
+  postgres-menu:
+    image: postgres:15-alpine
+    container_name: postgres-menu
+    environment:
+      POSTGRES_DB: food_ordering_menu
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 10112004
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-menu-data:/var/lib/postgresql/data
+    networks:
+      - food-ordering-network
+
+  service-menu:
+    build:
+      context: ./service-menu
+      dockerfile: Dockerfile
+    container_name: service-menu
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-menu:5432/food_ordering_menu
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 10112004
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - postgres-menu
+      - eureka-server
+    networks:
+      - food-ordering-network
+
+  # Order Service
+  postgres-order:
+    image: postgres:15-alpine
+    container_name: postgres-order
+    environment:
+      POSTGRES_DB: food_ordering_order
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 10112004
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres-order-data:/var/lib/postgresql/data
+    networks:
+      - food-ordering-network
+
+  service-order:
+    build:
+      context: ./service-order
+      dockerfile: Dockerfile
+    container_name: service-order
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/food_ordering_order
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 10112004
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - postgres-order
+      - rabbitmq
+      - eureka-server
+    networks:
+      - food-ordering-network
+
+  # Payment Service
+  postgres-payment:
+    image: postgres:15-alpine
+    container_name: postgres-payment
+    environment:
+      POSTGRES_DB: food_ordering_payment
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 10112004
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres-payment-data:/var/lib/postgresql/data
+    networks:
+      - food-ordering-network
+
+  service-payment:
+    build:
+      context: ./service-payment
+      dockerfile: Dockerfile
+    container_name: service-payment
+    ports:
+      - "8084:8084"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-payment:5432/food_ordering_payment
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 10112004
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SEPAY_BANK_ACCOUNT_NUMBER: "YOUR_ACCOUNT_NUMBER"
+      SEPAY_BANK_CODE: "YOUR_BANK_CODE"
+      SEPAY_ACCOUNT_NAME: "YOUR_ACCOUNT_NAME"
+    depends_on:
+      - postgres-payment
+      - eureka-server
+    networks:
+      - food-ordering-network
+
+  # Inventory Service
+  postgres-inventory:
+    image: postgres:15-alpine
+    container_name: postgres-inventory
+    environment:
+      POSTGRES_DB: food_ordering_inventory
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 10112004
+    ports:
+      - "5436:5432"
+    volumes:
+      - postgres-inventory-data:/var/lib/postgresql/data
+    networks:
+      - food-ordering-network
+
+  service-inventory:
+    build:
+      context: ./service-inventory
+      dockerfile: Dockerfile
+    container_name: service-inventory
+    ports:
+      - "8085:8085"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/food_ordering_inventory
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 10112004
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - postgres-inventory
+      - rabbitmq
+      - eureka-server
+    networks:
+      - food-ordering-network
+
+  # Notification Service
+  postgres-notification:
+    image: postgres:15-alpine
+    container_name: postgres-notification
+    environment:
+      POSTGRES_DB: food_ordering_notification
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 10112004
+    ports:
+      - "5437:5432"
+    volumes:
+      - postgres-notification-data:/var/lib/postgresql/data
+    networks:
+      - food-ordering-network
+
+  service-socket:
+    build: ./service-socket
+    container_name: service-socket
+    ports:
+      - "8089:8089"
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+      - rabbitmq
+    networks:
+      - food-ordering-network
+
+  service-notification:
+    build:
+      context: ./service-notification
+      dockerfile: Dockerfile
+    container_name: service-notification
+    ports:
+      - "8086:8086"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-notification:5432/food_ordering_notification
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 10112004
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - postgres-notification
+      - rabbitmq
+      - eureka-server
+    networks:
+      - food-ordering-network
+
+volumes:
+  postgres-auth-data:
+  postgres-menu-data:
+  postgres-order-data:
+  postgres-payment-data:
+  postgres-inventory-data:
+  postgres-notification-data:
+  rabbitmq-data:
+
+networks:
+  food-ordering-network:
+    driver: bridge
