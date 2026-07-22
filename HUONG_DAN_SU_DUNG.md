@@ -1,4 +1,4 @@
-# 📚 Hướng Dẫn Sử Dụng & Giải Thích Chi Tiết Hệ Thống Food Ordering
+# 📚 Hướng Dẫn Sử Dụng & Giải Thích Chi Tiết Hệ Thống BachHome
 
 Tài liệu này được biên soạn chi tiết để giải thích toàn bộ kiến thức kỹ thuật, luồng dữ liệu và phân chia trách nhiệm trong nhóm.
 
@@ -10,7 +10,7 @@ Tài liệu này được biên soạn chi tiết để giải thích toàn bộ
 Chịu trách nhiệm toàn bộ các tính năng cốt lõi và kỹ thuật phức tạp của hệ thống:
 - **Core Backend**:
   - **Authentication**: Đăng ký, Đăng nhập, Bảo mật (JWT), phân quyền User/Admin.
-  - **Order & Menu Services**: Xử lý logic đặt hàng, quản lý món ăn, tồn kho.
+  - **Order & Menu Services**: Xử lý logic đặt hàng, quản lý sản phẩm, tồn kho.
 - **Advanced Integrations (Nâng cao)**:
   - **Thanh toán Online (SePay)**: Tích hợp cổng thanh toán, xử lý Webhook, bảo mật giao dịch.
   - **Event-Driven Architecture**: Cấu hình **RabbitMQ** để xử lý giao tiếp bất đồng bộ giữa các services (Payment -> Order -> Inventory).
@@ -75,7 +75,7 @@ public boolean validateToken(String token)
 // - Logic: Giải mã token bằng Secret Key. Nếu giải được và chưa hết hạn -> True.
 ```
 
-### 🍔 1.2 Luồng Order & Menu (Core Business)
+### 📦 1.2 Luồng Order & Menu (Core Business)
 **Luồng đi:** `Frontend` -> `API Gateway` -> `Service-Order` -> `RabbitMQ`
 
 **Kiến thức cần nắm (Lý thuyết):**
@@ -91,7 +91,7 @@ public OrderDto execute(CreateOrderDto request)
 // - Logic:
 //   1. Validate: Kiểm tra tồn kho, tính lại tổng tiền từ DB (không tin giá từ client).
 //   2. Save Order: Lưu thông tin chung (User, Tổng tiền, Trạng thái PENDING).
-//   3. Save Items: Lưu chi tiết từng món ăn.
+//   3. Save Items: Lưu chi tiết từng sản phẩm.
 //   4. Publish Event: Gửi tin "ORDER_CREATED" vào RabbitMQ.
 // - Rollback: Nếu bước 3 lỗi, bước 2 tự hủy.
 ```
@@ -164,14 +164,14 @@ public void handleEvent(Object event)
 Là người phụ trách trải nghiệm người dùng, bạn đảm bảo giao diện phản hồi mượt mà và gọi API chính xác.
 
 ### 🛒 2.1 Quản Lý State (Cart Context)
-**Vấn đề**: Giỏ hàng cần truy cập được từ trang Menu (để thêm) và trang Checkout (để thanh toán).
+**Vấn đề**: Giỏ hàng cần truy cập được từ trang Sản phẩm (để thêm) và trang Checkout (để thanh toán).
 **Giải pháp**: Dùng **Context API** bao bọc toàn bộ ứng dụng.
 
 **Chi Tiết Code:**
 ```javascript
 // frontend/src/context/CartContext.jsx
 const addToCart = (product) => {
-  // - Mục đích: Thêm món vào giỏ hàng local.
+  // - Mục đích: Thêm sản phẩm vào giỏ hàng local.
   // - Logic:
   //   1. Check: `cart.find(item => item.id === product.id)`
   //   2. If exist: `item.quantity += 1`

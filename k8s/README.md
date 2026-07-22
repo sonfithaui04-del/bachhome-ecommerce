@@ -2,7 +2,7 @@
 
 ## Tổng quan
 
-Thư mục này chứa các file manifest Kubernetes để triển khai hệ thống Food Ordering lên K8s cluster.
+Thư mục này chứa các file manifest Kubernetes để triển khai hệ thống BachHome lên K8s cluster.
 
 ## 📁 Cấu trúc thư mục
 

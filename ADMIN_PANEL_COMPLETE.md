@@ -32,12 +32,11 @@
 #### Pages (6 files)
 - ✅ `src/pages/LoginPage.jsx` - Admin login
 - ✅ `src/pages/Dashboard.jsx` - Stats & charts
-- ✅ `src/pages/MenuManagement.jsx` - Full CRUD for menu
-- ✅ `src/pages/CategoryManagement.jsx` - Category CRUD
-- ✅ `src/pages/OrderManagement.jsx` - Order management
-- ✅ `src/pages/UserManagement.jsx` - User list
-- ✅ `src/pages/IngredientManagement.jsx` - Inventory tracking
-- ✅ `src/pages/RecipeManagement.jsx` - Recipe builder
+- ✅ `src/pages/MenuManagement.jsx` - Full CRUD cho sản phẩm
+- ✅ `src/pages/CategoryManagement.jsx` - CRUD danh mục
+- ✅ `src/pages/OrderManagement.jsx` - Quản lý đơn hàng
+- ✅ `src/pages/UserManagement.jsx` - Danh sách người dùng
+- ✅ `src/pages/IngredientManagement.jsx` - Quản lý tồn kho
 
 ---
 
@@ -55,19 +54,19 @@
 ## 🎨 PREMIUM FEATURES
 
 ### 🎯 Dashboard
-- 📊 **4 Statistics Cards** - Orders, Revenue, Menu Items, Users
+- 📊 **4 Statistics Cards** - Orders, Revenue, Products, Users
 - 📈 **Bar Chart** - Weekly orders visualization
 - 📉 **Line Chart** - Revenue trends
 - 📋 **Recent Orders Table** - Latest 5 orders
 - 🎨 **Gradient Cards** - Blue, Green, Purple, Orange themes
 
-### 🍔 Menu Management
-- ➕ **Add Menu Items** - Modal form with validation
-- ✏️ **Edit Items** - Update name, price, description, category
-- 🗑️ **Delete Items** - Confirm before delete
+### 📦 Product Management (Sản phẩm)
+- ➕ **Add Products** - Modal form with validation
+- ✏️ **Edit Products** - Update name, price, description, category
+- 🗑️ **Delete Products** - Confirm before delete
 - 📂 **Category Selection** - Dropdown with all categories
 - 💰 **Price Input** - Number input with VND formatting
-- ✅ **Availability Toggle** - Enable/disable items
+- ✅ **Availability Toggle** - Enable/disable products
 - 🎴 **Grid Layout** - Beautiful card-based display
 
 ### 📂 Category Management
@@ -92,17 +91,11 @@
 - 👤 **User Avatar** - Initial-based avatars
 - 📧 **Contact Info** - Email & phone display
 
-### 🥕 Ingredient Management
+### 📦 Inventory Management (Tồn kho)
 - 📋 **Inventory Tracking** - Monitor stock levels
-- ➕ **Add Ingredients** - Define units, cost, expiry
+- ➕ **Add Stock Items** - Define units, cost
 - ⚠️ **Low Stock Alerts** - Visual indicators
 - 📊 **Cost Management** - Track cost per unit
-
-### 👨‍🍳 Recipe Management
-- 🍳 **Recipe Builder** - Link menu items to ingredients
-- 📝 **Quantity Definition** - Precise measurements
-- 🔄 **Dynamic Form** - Add/remove ingredients easily
-- 📋 **Menu Integration** - Select from existing menu items
 
 ---
 
@@ -136,7 +129,7 @@
 
 **Test Credentials:**
 ```
-Email: admin@example.com  
+Email: admin@foodorder.com  
 Password: admin123
 Role: ADMIN (required)
 ```
@@ -158,10 +151,10 @@ Using **Recharts** library:
 
 ### Menu Service
 ```javascript
-GET    /api/menu              // Get all menu items
-POST   /api/menu              // Create menu item
-PUT    /api/menu/:id          // Update menu item
-DELETE /api/menu/:id          // Delete menu item
+GET    /api/menu              // Get all products
+POST   /api/menu              // Create product
+PUT    /api/menu/:id          // Update product
+DELETE /api/menu/:id          // Delete product
 ```
 
 ### Category Service
@@ -241,7 +234,7 @@ frontend-admin/
 
 ### 1. Start Backend
 ```bash
-cd food-ordering
+cd Bach
 docker-compose up -d
 ```
 
@@ -260,8 +253,8 @@ npm run dev
 
 ### 5. Manage System
 - **Dashboard** → View analytics
-- **Menu Items** → Add/Edit/Delete food items
-- **Categories** → Manage food categories
+- **Products** → Add/Edit/Delete products
+- **Categories** → Manage product categories
 - **Orders** → Update order status
 - **Users** → View system users
 
@@ -269,24 +262,24 @@ npm run dev
 
 ## 📈 SYSTEM OVERVIEW
 
-**Complete Food Ordering System:**
+**Complete BachHome System:**
 
 | Component | Port | Status | Description |
 |-----------|------|--------|-------------|
-| **Customer Frontend** | 3001 | ✅ Running | User-facing app |
+| **Customer Frontend** | 3000 | ✅ Running | User-facing app |
 | **Admin Panel** | 3002 | ✅ Running | Management dashboard |
 | **API Gateway** | 8080 | ✅ Running | Backend gateway |
 | **Eureka Server** | 8761 | ✅ Running | Service discovery |
-| **6 Microservices** | 8081-8086 | ✅ Running | Backend services |
+| **Microservices** | 8081-8089 | ✅ Running | Backend services |
 
 ---
 
 ## 💡 USAGE TIPS
 
-1. **Create Categories First** - Before adding menu items
+1. **Create Categories First** - Before adding products
 2. **Check Dashboard Daily** - Monitor orders & revenue
 3. **Update Order Status** - Keep customers informed
-4. **Manage Menu Items** - Keep items up-to-date
+4. **Manage Products** - Keep products up-to-date
 5. **Monitor Analytics** - Use charts for insights
 
 ---
@@ -316,7 +309,7 @@ You now have a **COMPLETE ADMIN PANEL** with:
 | Application | URL | Purpose |
 |------------|-----|---------|
 | **Admin Panel** | http://localhost:3002 | System management |
-| **Customer App** | http://localhost:3001 | Order food |
+| **Customer App** | http://localhost:3000 | Mua sắm |
 | **API Gateway** | http://localhost:8080 | Backend APIs |
 | **Eureka** | http://localhost:8761 | Service registry |
 | **RabbitMQ** | http://localhost:15672 | Message broker |
@@ -342,7 +335,7 @@ A **COMPLETE FULL-STACK MICROSERVICES SYSTEM** with:
 **Admin Panel (100%):**
 - 17 React files
 - Dashboard analytics
-- Menu management
+- Product management
 - Order management
 - Category management
 
@@ -357,9 +350,9 @@ A **COMPLETE FULL-STACK MICROSERVICES SYSTEM** with:
 
 ## 🎊 CONGRATULATIONS!
 
-Your **Food Ordering System** is now **COMPLETE** with:
+Your **BachHome** system is now **COMPLETE** with:
 
-✅ Customer ordering app  
+✅ Customer shopping app  
 ✅ Admin management panel  
 ✅ 6 Backend microservices  
 ✅ Full infrastructure  
@@ -370,4 +363,4 @@ Your **Food Ordering System** is now **COMPLETE** with:
 
 ---
 
-**Built with ❤️ for efficient restaurant management**
+**Built with ❤️ for efficient home appliance store management**

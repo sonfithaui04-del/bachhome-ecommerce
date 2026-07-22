@@ -1,7 +1,7 @@
 # API Gateway
 
 ## 📋 Mô tả
-API Gateway là cổng vào duy nhất cho tất cả requests từ client đến hệ thống Food Ordering. Gateway sẽ routing requests đến các microservices tương ứng thông qua Eureka Service Discovery.
+API Gateway là cổng vào duy nhất cho tất cả requests từ client đến hệ thống BachHome. Gateway sẽ routing requests đến các microservices tương ứng thông qua Eureka Service Discovery.
 
 ## 🔧 Công nghệ
 - Spring Boot 3.2.1
@@ -57,7 +57,7 @@ Gateway cần Eureka Server chạy tại: http://localhost:8761
 # Auth - Register
 POST http://localhost:8080/api/auth/register
 
-# Menu - Get all items
+# Sản phẩm - Lấy danh sách
 GET http://localhost:8080/api/menu/items
 
 # Orders - Create order

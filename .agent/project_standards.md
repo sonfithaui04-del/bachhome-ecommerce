@@ -1,6 +1,6 @@
 # Project Standards & Coding Rules
 
-This document outlines the architectural standards, coding conventions, and best practices established for the Food Ordering Microservices project.
+This document outlines the architectural standards, coding conventions, and best practices established for the BachHome Microservices project.
 
 ## 1. Technology Stack
 

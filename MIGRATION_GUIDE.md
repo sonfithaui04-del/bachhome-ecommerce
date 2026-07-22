@@ -1,6 +1,6 @@
 # HƯỚNG DẪN DI CHUYỂN DỰ ÁN SANG MÁY MỚI (MIGRATION GUIDE)
 
-Tài liệu này hướng dẫn cách cập nhật dự án trên một máy tính khác đang chạy phiên bản cũ của "Food Ordering System".
+Tài liệu này hướng dẫn cách cập nhật dự án trên một máy tính khác đang chạy phiên bản cũ của "BachHome".
 
 ## Yêu cầu trên máy mới
 - **Java 17+**
@@ -112,5 +112,5 @@ kubectl port-forward -n food-ordering svc/api-gateway 8080:8080
 - Restart Gateway: `kubectl rollout restart deployment/api-gateway -n food-ordering`
 
 **3. Database trống trơn:**
-- Đây là bình thường vì Kubernetes trên Docker Desktop thường không giữ data khi xóa namespace trừ khi cấu hình HostPath đặc biệt. Bạn sẽ cần tạo lại dữ liệu test (Tài khoản, Menu, v.v.).
+- Đây là bình thường vì Kubernetes trên Docker Desktop thường không giữ data khi xóa namespace trừ khi cấu hình HostPath đặc biệt. Bạn sẽ cần tạo lại dữ liệu test (Tài khoản, Sản phẩm, v.v.).
 

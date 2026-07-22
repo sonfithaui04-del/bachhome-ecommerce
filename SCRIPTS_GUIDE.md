@@ -75,7 +75,7 @@ Chọn service cần xem logs:
 - 🌍 Eureka Server: http://localhost:8761
 - 🚪 API Gateway: http://localhost:8080
 - 🔐 Service Auth: http://localhost:8081
-- 🍔 Service Menu: http://localhost:8082
+- 🛍️ Service Menu: http://localhost:8082
 - 📦 Service Order: http://localhost:8083
 - 📊 Service Inventory: http://localhost:8085
 - 💳 Service Payment: http://localhost:8084
@@ -137,7 +137,7 @@ npm run dev
 ## 📁 **CẤU TRÚC SCRIPTS**
 
 ```
-food-ordering/
+Bach/
 ├── start-all.bat          # 🚀 Chạy tất cả
 ├── start-backend.bat      # 🐳 Chỉ backend
 ├── start-frontend.bat     # 💻 Chỉ frontend

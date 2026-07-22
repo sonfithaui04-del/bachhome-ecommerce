@@ -1,7 +1,7 @@
 # Authentication Service
 
 ## 📋 Mô tả
-Service xử lý authentication và authorization cho toàn bộ hệ thống Food Ordering.
+Service xử lý authentication và authorization cho toàn bộ hệ thống BachHome.
 
 ## 🔧 Công nghệ
 - Spring Boot 3.2.1
@@ -105,7 +105,7 @@ Truy cập: http://localhost:8081/swagger-ui.html
 
 | Role | Mô tả |
 |------|-------|
-| CUSTOMER | Khách hàng đặt món |
+| CUSTOMER | Khách hàng mua sắm |
 | ADMIN | Quản trị viên |
 | STAFF | Nhân viên (dự phòng) |
 

@@ -21,7 +21,7 @@
 #### ✅ Service-Menu (Port 8082)
 **Status:** COMPLETE & TESTED  
 - Domain: MenuItem, Category
-- Features: CRUD Menu & Categories
+- Features: CRUD Sản phẩm & Danh mục
 - **API:** GET/POST /menu, GET/POST /categories
 - Swagger: http://localhost:8082/swagger-ui.html
 

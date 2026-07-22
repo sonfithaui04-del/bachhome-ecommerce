@@ -1,5 +1,5 @@
 # 📋 BÁO CÁO ĐỒ ÁN MÔN HỌC
-## Hệ Thống Đặt Món Ăn Trực Tuyến - Food Ordering System
+## Website Bán Đồ Gia Dụng - BachHome
 
 **Số trang dự kiến:** 40-50 trang  
 **Hình thức:** Theo đồ án tốt nghiệp
@@ -19,7 +19,7 @@
 ---
 
 **Đề tài:**  
-# XÂY DỰNG HỆ THỐNG ĐẶT MÓN ĂN TRỰC TUYẾN VỚI KIẾN TRÚC MICROSERVICES
+# XÂY DỰNG WEBSITE BÁN ĐỒ GIA DỤNG BACHHOME VỚI KIẾN TRÚC MICROSERVICES
 
 ---
 
@@ -74,7 +74,7 @@
 | 8.1 | Docker Compose Deployment | 40 |
 | 8.2 | Kubernetes Dashboard | 43 |
 | 9.1 | Giao diện đăng nhập | 45 |
-| 9.2 | Giao diện danh sách món ăn | 46 |
+| 9.2 | Giao diện danh sách sản phẩm | 46 |
 | 9.3 | Eureka Dashboard | 47 |
 
 ---
@@ -271,10 +271,10 @@ DDD ra đời để giải quyết vấn đề phần mềm ngày càng phức t
 
 **Ubiquitous Language** là ngôn ngữ chung được sử dụng bởi cả developers và domain experts. Ngôn ngữ này được phản ánh trong code, models, và giao tiếp.
 
-**Ví dụ trong hệ thống Food Ordering:**
+**Ví dụ trong hệ thống BachHome:**
 - `Order` - Đơn hàng
-- `MenuItem` - Món ăn trong menu
-- `Ingredient` - Nguyên liệu
+- `MenuItem` - Sản phẩm trong danh mục
+- `Ingredient` - Mặt hàng tồn kho
 - `Confirmed`, `Preparing`, `Delivered` - Trạng thái đơn hàng
 
 ### 2.2.2 Bounded Context
@@ -283,13 +283,13 @@ DDD ra đời để giải quyết vấn đề phần mềm ngày càng phức t
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    FOOD ORDERING SYSTEM                      │
+│                       BACHHOME SYSTEM                       │
 ├────────────┬────────────┬────────────┬────────────┬─────────┤
 │   Auth     │   Menu     │   Order    │  Payment   │Inventory│
 │  Context   │  Context   │  Context   │  Context   │ Context │
 ├────────────┼────────────┼────────────┼────────────┼─────────┤
 │ • User     │ • MenuItem │ • Order    │ • Payment  │• Ingredi│
-│ • Role     │ • Category │ • OrderItem│ • Transact │• Recipe │
+│ • Role     │ • Category │ • OrderItem│ • Transact │• Import │
 │ • Login    │ • Variant  │ • Status   │ • Method   │• Stock  │
 └────────────┴────────────┴────────────┴────────────┴─────────┘
 ```
@@ -402,7 +402,7 @@ Tập trung vào việc thiết kế chi tiết bên trong mỗi bounded context
 └──────────────────────────────────────────────────────────────┘
 ```
 
-**Trong dự án Food Ordering:**
+**Trong dự án BachHome:**
 ```
 service-order/
 ├── interfaces/
@@ -771,14 +771,14 @@ Các services giao tiếp thông qua events thay vì direct calls:
 
 ### 5.1.1 Bối cảnh
 
-Trong thời đại số hóa, các nhà hàng/quán ăn cần một hệ thống đặt món ăn trực tuyến để:
+Trong thời đại số hóa, các cửa hàng đồ gia dụng cần một website bán hàng trực tuyến để:
 - Tiếp cận nhiều khách hàng hơn
 - Tối ưu quy trình đặt hàng và vận hành
-- Quản lý menu, đơn hàng, thanh toán hiệu quả
+- Quản lý sản phẩm, đơn hàng, thanh toán hiệu quả
 
 ### 5.1.2 Mục tiêu
 
-Xây dựng **Hệ thống đặt món ăn trực tuyến** với kiến trúc Microservices, áp dụng:
+Xây dựng **Website bán đồ gia dụng BachHome** với kiến trúc Microservices, áp dụng:
 - Domain-Driven Design (DDD)
 - API Gateway Pattern
 - Container deployment (Docker, Kubernetes)
@@ -791,10 +791,10 @@ Xây dựng **Hệ thống đặt món ăn trực tuyến** với kiến trúc M
 | STT | Module | Chức năng |
 |-----|--------|-----------|
 | 1 | **Auth** | Đăng ký, đăng nhập, JWT authentication |
-| 2 | **Menu** | CRUD danh mục, món ăn, variants |
+| 2 | **Menu** | CRUD danh mục, sản phẩm, variants |
 | 3 | **Order** | Tạo đơn, cập nhật trạng thái, xem lịch sử |
 | 4 | **Payment** | Xử lý thanh toán, ghi nhận transaction |
-| 5 | **Inventory** | Quản lý nguyên liệu, công thức, trừ kho |
+| 5 | **Inventory** | Quản lý tồn kho, nhập kho, trừ kho |
 | 6 | **Notification** | Gửi thông báo qua email/SMS |
 
 ---
@@ -813,8 +813,8 @@ Xây dựng **Hệ thống đặt món ăn trực tuyến** với kiến trúc M
 
 | Tác nhân | Vai trò |
 |----------|---------|
-| **Customer** | Xem menu, đặt hàng, thanh toán |
-| **Admin** | Quản lý menu, đơn hàng, users |
+| **Customer** | Xem sản phẩm, đặt hàng, thanh toán |
+| **Admin** | Quản lý sản phẩm, đơn hàng, users |
 | **Staff** | Xử lý đơn hàng, cập nhật trạng thái |
 
 ---
@@ -831,7 +831,7 @@ Hệ thống được chia thành **6 Bounded Contexts**, mỗi context tương 
 | Menu | service-menu | Quản lý menu, categories |
 | Order | service-order | Quản lý đơn hàng |
 | Payment | service-payment | Xử lý thanh toán |
-| Inventory | service-inventory | Quản lý kho, nguyên liệu |
+| Inventory | service-inventory | Quản lý kho, tồn kho |
 | Notification | service-notification | Gửi thông báo |
 
 ## 6.2 Context Mapping
@@ -1113,7 +1113,7 @@ Order Service → order.created event → Exchange → Queue → Payment Service
 ## 8.2 Cấu trúc thư mục dự án
 
 ```
-food-ordering/
+bachhome/
 ├── eureka-server/          # Service Discovery
 ├── api-gateway/            # API Gateway
 ├── service-auth/           # Auth Microservice
@@ -1226,7 +1226,7 @@ spec:
 ## 8.5 CI/CD Pipeline
 
 ```yaml
-name: Food Ordering CI/CD
+name: BachHome CI/CD
 
 on:
   push:
@@ -1269,7 +1269,7 @@ jobs:
 
 ## 10.1 Kết luận
 
-Đồ án đã hoàn thành việc xây dựng **Hệ thống đặt món ăn trực tuyến** với các mục tiêu:
+Đồ án đã hoàn thành việc xây dựng **Website bán đồ gia dụng BachHome** với các mục tiêu:
 
 ✅ **Domain-Driven Design:** Áp dụng DDD với 4 layers cho từng service  
 ✅ **API Gateway:** Triển khai Spring Cloud Gateway với routing, CORS  

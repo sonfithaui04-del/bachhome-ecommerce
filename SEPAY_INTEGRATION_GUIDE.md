@@ -776,4 +776,4 @@ https://abc123.ngrok.io/api/payments/sepay/webhook
 
 ---
 
-> 📌 **Lưu ý**: Tài liệu này dựa trên hệ thống Food Ordering. Bạn cần điều chỉnh entity names, routing keys, và logic business phù hợp với dự án của mình.
+> 📌 **Lưu ý**: Tài liệu này dựa trên hệ thống BachHome. Bạn cần điều chỉnh entity names, routing keys, và logic business phù hợp với dự án của mình.

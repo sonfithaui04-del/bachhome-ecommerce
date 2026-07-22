@@ -1,29 +1,29 @@
-# 🎛️ Admin Panel - Food Ordering System
+# 🎛️ Admin Panel - BachHome
 
 ## 📋 Overview
 
-Premium admin dashboard for managing the Food Ordering System. Built with React, Vite, Tailwind CSS, and Recharts.
+Premium admin dashboard for managing the BachHome home appliance store. Built with React, Vite, Tailwind CSS, and Recharts.
 
 ---
 
 ## ✨ Features
 
 ### 📊 **Dashboard**
-- Real-time statistics (orders, revenue, users, menu items)
+- Real-time statistics (orders, revenue, users, products)
 - Interactive charts (orders & revenue trends)
 - Recent orders overview
 - Visual analytics with Recharts
 
-### 🍔 **Menu Management**
-- ➕ Add new menu items
-- ✏️ Edit existing items
-- 🗑️ Delete items
+### 📦 **Product Management (Sản phẩm)**
+- ➕ Add new products
+- ✏️ Edit existing products
+- 🗑️ Delete products
 - 📂 Assign categories
 - 💰 Set prices
 - ✅ Toggle availability
 
 ### 📂 **Category Management**
-- Create food categories
+- Create product categories
 - Edit category details
 - Delete categories
 - Activate/deactivate categories
@@ -89,7 +89,7 @@ frontend-admin/
 │   │   └── AuthContext.jsx    # Admin authentication
 │   ├── pages/
 │   │   ├── Dashboard.jsx      # Stats & charts
-│   │   ├── MenuManagement.jsx # CRUD menu items
+│   │   ├── MenuManagement.jsx # CRUD sản phẩm
 │   │   ├── CategoryManagement.jsx
 │   │   ├── OrderManagement.jsx
 │   │   ├── UserManagement.jsx
@@ -121,10 +121,10 @@ frontend-admin/
 Connects to backend via API Gateway:
 
 ### Menu Endpoints
-- `GET /api/menu` - Get all menu items
-- `POST /api/menu` - Create menu item
-- `PUT /api/menu/:id` - Update menu item
-- `DELETE /api/menu/:id` - Delete menu item
+- `GET /api/menu` - Get all products
+- `POST /api/menu` - Create product
+- `PUT /api/menu/:id` - Update product
+- `DELETE /api/menu/:id` - Delete product
 
 ### Category Endpoints
 - `GET /api/categories` - Get all categories
@@ -170,8 +170,8 @@ Connects to backend via API Gateway:
 - Weekly revenue chart (line chart)
 - Recent orders table
 
-### Menu Management (`/menu`)
-- Grid view of menu items
+### Product Management (`/menu`)
+- Grid view of products
 - Add/Edit modal form
 - Price & availability controls
 - Category assignment
@@ -210,8 +210,8 @@ Connects to backend via API Gateway:
 
 1. **Login** - Use admin credentials
 2. **Dashboard** - Monitor system overview
-3. **Add Categories** - Create categories before menu items
-4. **Add Menu Items** - Assign to categories, set prices
+3. **Add Categories** - Create categories before products
+4. **Add Products** - Assign to categories, set prices
 5. **Manage Orders** - Update status as orders progress
 6. **View Analytics** - Check charts for trends
 
@@ -252,7 +252,7 @@ Update `vite.config.js` API proxy for production backend URL.
 
 ## 📈 Future Enhancements
 
-- [ ] Image upload for menu items
+- [ ] Image upload for products
 - [ ] Bulk operations
 - [ ] Export data (CSV/PDF)
 - [ ] Advanced analytics
@@ -267,7 +267,7 @@ Update `vite.config.js` API proxy for production backend URL.
 
 ✅ Admin authentication with role check  
 ✅ Dashboard with statistics & charts  
-✅ Full CRUD for menu items  
+✅ Full CRUD for products  
 ✅ Full CRUD for categories  
 ✅ Order status management  
 ✅ User list viewing  
@@ -279,6 +279,6 @@ Update `vite.config.js` API proxy for production backend URL.
 
 ---
 
-**Built with ❤️ for efficient restaurant management**
+**Built with ❤️ for efficient home appliance store management**
 
 **Access:** http://localhost:3002

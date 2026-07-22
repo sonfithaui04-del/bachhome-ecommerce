@@ -1,7 +1,7 @@
 # Menu Service
 
 ## 📋 Mô tả
-Service quản lý menu items và categories cho hệ thống Food Ordering.
+Service quản lý sản phẩm và danh mục cho hệ thống BachHome.
 
 ## 🔧 Công nghệ
 - Spring Boot 3.2.1
@@ -59,9 +59,9 @@ mvn spring-boot:run
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/menu` | Lấy tất cả menu items |
-| GET | `/menu?availableOnly=true` | Lấy available items |
-| POST | `/menu` | Tạo menu item mới |
+| GET | `/menu` | Lấy tất cả sản phẩm |
+| GET | `/menu?availableOnly=true` | Lấy sản phẩm đang bán |
+| POST | `/menu` | Tạo sản phẩm mới |
 
 ## 📊 Swagger UI
 http://localhost:8082/swagger-ui.html
@@ -73,8 +73,8 @@ http://localhost:8082/swagger-ui.html
 curl -X POST http://localhost:8082/categories \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Món chính",
-    "description": "Các món ăn chính",
+    "name": "Nhà bếp",
+    "description": "Đồ gia dụng nhà bếp",
     "displayOrder": 1
   }'
 ```
@@ -85,14 +85,14 @@ curl -X POST http://localhost:8082/menu \
   -H "Content-Type: application/json" \
   -d '{
     "categoryId": 1,
-    "name": "Phở bò",
-    "description": "Phở bò truyền thống Hà Nội",
-    "price": 50000,
-    "imageUrl": "https://example.com/pho.jpg"
+    "name": "Nồi cơm điện",
+    "description": "Nồi cơm điện 1.8L chống dính cao cấp",
+    "price": 890000,
+    "imageUrl": "https://example.com/noi-com-dien.jpg"
   }'
 ```
 
-### Get All Menu Items
+### Get All Products
 ```bash
 curl http://localhost:8082/menu
 ```

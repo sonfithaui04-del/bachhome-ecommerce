@@ -1,7 +1,7 @@
 # Eureka Server
 
 ## 📋 Mô tả
-Service Discovery Server cho hệ thống Food Ordering. Tất cả các microservices sẽ đăng ký với Eureka Server này để có thể tìm kiếm và giao tiếp với nhau.
+Service Discovery Server cho hệ thống BachHome. Tất cả các microservices sẽ đăng ký với Eureka Server này để có thể tìm kiếm và giao tiếp với nhau.
 
 ## 🔧 Công nghệ
 - Spring Boot 3.2.1

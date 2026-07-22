@@ -1,4 +1,4 @@
-# 🏗️ Architecture Overview - Food Ordering System
+# 🏗️ Architecture Overview - BachHome
 
 ## 📊 System Architecture Diagram
 

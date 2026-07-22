@@ -1,6 +1,6 @@
 # MÔ TẢ CHI TIẾT CÁC CHỨC NĂNG HỆ THỐNG
 
-Dưới đây là các bảng mô tả chi tiết quy trình nghiệp vụ (Use Case Specifications) và biểu đồ tuần tự (Sequence Diagrams) cho các chức năng cốt lõi của **Hệ thống đặt món ăn trực tuyến**.
+Dưới đây là các bảng mô tả chi tiết quy trình nghiệp vụ (Use Case Specifications) và biểu đồ tuần tự (Sequence Diagrams) cho các chức năng cốt lõi của **Website bán đồ gia dụng BachHome**.
 
 ---
 
@@ -13,7 +13,7 @@ Dưới đây là các bảng mô tả chi tiết quy trình nghiệp vụ (Use 
 | **Mã Use case** | `UC_DangKy` |
 | **Tên Use case** | Đăng ký tài khoản khách hàng |
 | **Tác nhân** | Khách hàng (Vãng lai) |
-| **Mô tả** | Cho phép khách hàng mới tạo tài khoản để sử dụng các dịch vụ đặt món. |
+| **Mô tả** | Cho phép khách hàng mới tạo tài khoản để sử dụng các dịch vụ mua sắm. |
 | **Sự kiện kích hoạt** | Người dùng bấm nút "Đăng ký" trên trang chủ hoặc trang đăng nhập. |
 | **Tiền điều kiện** | Người dùng chưa đăng nhập. |
 | **Hậu điều kiện** | Tài khoản mới được tạo, lưu vào CSDL và người dùng có thể đăng nhập. |
@@ -145,28 +145,28 @@ sequenceDiagram
 
 ---
 
-## 3. UC_XemMenu: Xem danh sách món ăn
+## 3. UC_XemMenu: Xem danh sách sản phẩm
 
 ### Bảng mô tả chi tiết
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
 | **Mã Use case** | `UC_XemMenu` |
-| **Tên Use case** | Xem và tìm kiếm món ăn |
+| **Tên Use case** | Xem và tìm kiếm sản phẩm |
 | **Tác nhân** | Khách hàng, Khách vãng lai |
-| **Mô tả** | Cho phép người dùng xem danh sách món ăn, lọc theo danh mục hoặc tìm kiếm theo tên. |
-| **Sự kiện kích hoạt** | Người dùng truy cập trang chủ hoặc trang thực đơn. |
+| **Mô tả** | Cho phép người dùng xem danh sách sản phẩm, lọc theo danh mục hoặc tìm kiếm theo tên. |
+| **Sự kiện kích hoạt** | Người dùng truy cập trang chủ hoặc trang sản phẩm. |
 | **Tiền điều kiện** | Hệ thống Menu Service đang hoạt động. |
-| **Hậu điều kiện** | Danh sách món ăn được hiển thị. |
+| **Hậu điều kiện** | Danh sách sản phẩm được hiển thị. |
 
 #### Luồng sự kiện chính
 
 | # | Thực hiện bởi | Hành động |
 |---|---|---|
-| 1 | Người dùng | Truy cập vào màn hình "Thực đơn". |
-| 2 | Hệ thống | Gửi yêu cầu lấy danh sách danh mục (Categories) và món ăn (Products). |
+| 1 | Người dùng | Truy cập vào màn hình "Sản phẩm". |
+| 2 | Hệ thống | Gửi yêu cầu lấy danh sách danh mục (Categories) và sản phẩm (Products). |
 | 3 | Hệ thống | Truy vấn dữ liệu từ Menu Database. |
-| 4 | Hệ thống | Trả về danh sách món ăn, hình ảnh, giá. |
+| 4 | Hệ thống | Trả về danh sách sản phẩm, hình ảnh, giá. |
 | 5 | Người dùng | Xem danh sách, có thể chọn bộ lọc Category hoặc gõ từ khóa tìm kiếm. |
 | 6 | Hệ thống | Cập nhật danh sách hiển thị theo điều kiện lọc/tìm kiếm. |
 
@@ -181,7 +181,7 @@ sequenceDiagram
     participant Menu as Menu Service
     participant DB as Menu DB
 
-    U->>FE: Truy cập Menu Page
+    U->>FE: Truy cập trang Sản phẩm
     par Get Categories
         FE->>GW: GET /api/categories
         GW->>Menu: Forward
@@ -195,13 +195,13 @@ sequenceDiagram
         DB-->>Menu: List Products
         Menu-->>FE: JSON Products
     end
-    FE-->>U: Hiển thị giao diện Grid món ăn
+    FE-->>U: Hiển thị giao diện Grid sản phẩm
     
     opt Tìm kiếm
-        U->>FE: Nhập từ khóa "Pizza"
-        FE->>GW: GET /api/menu/search?q=Pizza
+        U->>FE: Nhập từ khóa "Quạt điện"
+        FE->>GW: GET /api/menu/search?q=Quạt điện
         GW->>Menu: Search Request
-        Menu->>DB: Query LIKE %Pizza%
+        Menu->>DB: Query LIKE %Quạt điện%
         DB-->>Menu: Result List
         Menu-->>FE: Updated List
         FE-->>U: Cập nhật giao diện
@@ -210,7 +210,7 @@ sequenceDiagram
 
 ---
 
-## 4. UC_DatHang: Đặt món (Tạo đơn hàng)
+## 4. UC_DatHang: Đặt hàng (Tạo đơn hàng)
 
 ### Bảng mô tả chi tiết
 
@@ -219,7 +219,7 @@ sequenceDiagram
 | **Mã Use case** | `UC_DatHang` |
 | **Tên Use case** | Đặt hàng (Checkout) |
 | **Tác nhân** | Khách hàng (Đã đăng nhập) |
-| **Mô tả** | Người dùng chọn món, xác nhận giỏ hàng và tạo đơn hàng mới. |
+| **Mô tả** | Người dùng chọn sản phẩm, xác nhận giỏ hàng và tạo đơn hàng mới. |
 | **Sự kiện kích hoạt** | Người dùng nhấn nút "Đặt hàng" hoặc "Thanh toán" từ giỏ hàng. |
 | **Tiền điều kiện** | Giỏ hàng không rỗng, người dùng đã đăng nhập. |
 | **Hậu điều kiện** | Đơn hàng được tạo ở trạng thái PENDING, tồn kho được giữ (reserved). |
@@ -240,7 +240,7 @@ sequenceDiagram
 
 | # | Tình huống | Hành xử của hệ thống |
 |---|---|---|
-| 5a | Hết hàng | Inventory Service báo lỗi -> Order Service cập nhật trạng thái CANCELLED -> Thông báo cho người dùng "Món ăn đã hết". |
+| 5a | Hết hàng | Inventory Service báo lỗi -> Order Service cập nhật trạng thái CANCELLED -> Thông báo cho người dùng "Sản phẩm đã hết hàng". |
 
 ### Biểu đồ tuần tự
 
@@ -353,7 +353,7 @@ sequenceDiagram
 | **Mã Use case** | `UC_QuanLyDon` |
 | **Tên Use case** | Cập nhật trạng thái đơn hàng |
 | **Tác nhân** | Nhân viên (Staff/Admin) |
-| **Mô tả** | Nhân viên bếp/quản lý cập nhật tiến độ đơn hàng (Đang chuẩn bị -> Đã xong -> Giao hàng). |
+| **Mô tả** | Nhân viên kho/quản lý cập nhật tiến độ đơn hàng (Đang chuẩn bị -> Đã đóng gói -> Giao hàng). |
 | **Sự kiện kích hoạt** | Nhân viên thao tác trên Admin Dashboard. |
 | **Tiền điều kiện** | Nhân viên đã đăng nhập với quyền STAFF. |
 | **Hậu điều kiện** | Trạng thái đơn hàng thay đổi, khách hàng nhận được thông báo cập nhật. |
@@ -363,10 +363,10 @@ sequenceDiagram
 | # | Thực hiện bởi | Hành động |
 |---|---|---|
 | 1 | Nhân viên | Xem danh sách đơn hàng "Chờ xử lý" (PREPARING). |
-| 2 | Nhân viên | Sau khi nấu xong, nhấn nút chuyển trạng thái "Đã xong/Chờ giao" (DELIVERING). |
+| 2 | Nhân viên | Sau khi đóng gói xong, nhấn nút chuyển trạng thái "Đã xong/Chờ giao" (DELIVERING). |
 | 3 | Hệ thống | Cập nhật trạng thái trong Database. |
 | 4 | Hệ thống | Gửi thông báo realtime (qua WebSocket hoặc RabbitMQ -> Notification) tới khách hàng. |
-| 5 | Khách hàng | Nhận được thông báo "Món ăn của bạn đang được giao". |
+| 5 | Khách hàng | Nhận được thông báo "Đơn hàng của bạn đang được giao". |
 
 ### Biểu đồ tuần tự
 

@@ -1,11 +1,11 @@
-# 🎯 FRONTEND TODOLIST - React App for Food Ordering System
+# 🎯 FRONTEND TODOLIST - React App for BachHome
 
 ## 📋 CONTEXT (Cho conversation mới)
 
-**Project:** Food Ordering System Microservices  
+**Project:** BachHome Microservices  
 **Backend:** 100% Complete - 6 microservices running on Docker  
 **Frontend:** Đã setup cơ bản, cần implement full React app  
-**Location:** `/food-ordering/frontend/`  
+**Location:** `Bach/frontend/`  
 **Tech Stack:** React 18 + Vite + TailwindCSS + React Router + Axios
 
 ---
@@ -365,11 +365,11 @@ export default function Navbar() {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           <Link to="/" className="text-2xl font-bold text-blue-600">
-            🍔 FoodOrder
+            🏠 BachHome
           </Link>
           
           <div className="flex gap-6 items-center">
-            <Link to="/menu" className="hover:text-blue-600">Menu</Link>
+            <Link to="/menu" className="hover:text-blue-600">Sản phẩm</Link>
             
             {user ? (
               <>
@@ -408,7 +408,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-800 text-white py-8 mt-20">
       <div className="container mx-auto px-4 text-center">
-        <p>&copy; 2025 Food Ordering System. All rights reserved.</p>
+        <p>&copy; 2025 BachHome. All rights reserved.</p>
         <p className="mt-2 text-gray-400">Microservices Architecture Demo</p>
       </div>
     </footer>
@@ -434,7 +434,7 @@ export default function Footer() {
 - Validation
 
 #### □ `src/pages/MenuPage.jsx`
-- Display menu items from Menu Service
+- Display products from Menu Service
 - Add to cart functionality
 
 #### □ `src/pages/CartPage.jsx`
@@ -473,7 +473,7 @@ npm run dev
 ## 📝 NOTES FOR NEW CONVERSATION
 
 **What to say to start:**
-"Tôi cần tiếp tục tạo React frontend cho Food Ordering System. Backend đã chạy đầy đủ 6 microservices. Hãy đọc file FRONTEND_TODOLIST.md và tiếp tục tạo các files còn lại."
+"Tôi cần tiếp tục tạo React frontend cho BachHome. Backend đã chạy đầy đủ 6 microservices. Hãy đọc file FRONTEND_TODOLIST.md và tiếp tục tạo các files còn lại."
 
 **Current Status:**
 - Backend: 100% (All 6 services running on Docker)
@@ -496,7 +496,7 @@ npm run dev
 - [ ] `npm run dev` starts app on port 3000
 - [ ] Can register user via Auth Service
 - [ ] Can login and see JWT token stored
-- [ ] Can browse menu from Menu Service
+- [ ] Can browse products from Menu Service
 - [ ] Can add items to cart
 - [ ] Can create order via Order Service
 - [ ] Can view order history

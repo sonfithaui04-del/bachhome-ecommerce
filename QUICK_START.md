@@ -1,4 +1,4 @@
-# 🚀 Quick Start Guide - Food Ordering System
+# 🚀 Quick Start Guide - BachHome
 
 ## 📋 Yêu cầu hệ thống
 
@@ -21,7 +21,7 @@
 
 ```bash
 git clone <repository-url>
-cd food-ordering
+cd Bach
 ```
 
 ### Bước 2: Kiểm tra cấu trúc
@@ -32,7 +32,7 @@ ls -la
 
 Bạn sẽ thấy:
 ```
-food-ordering/
+Bach/
 ├── eureka-server/          ✅ Service Discovery
 ├── api-gateway/            ✅ API Gateway
 ├── service-auth/           ✅ Authentication Service
@@ -73,7 +73,7 @@ Skip bước này, Docker sẽ tự build khi chạy `docker-compose up`.
 ### Bước 4: Chạy hệ thống với Docker
 
 ```bash
-# Từ thư mục gốc food-ordering
+# Từ thư mục gốc Bach
 docker-compose up -d
 ```
 

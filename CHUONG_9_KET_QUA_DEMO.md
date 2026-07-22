@@ -101,7 +101,7 @@ gantt
     axisFormat %s
     
     section Read API
-    Get Menu List       : 0, 85
+    Get Product List    : 0, 85
     Get Order Detail    : 0, 120
     
     section Write API

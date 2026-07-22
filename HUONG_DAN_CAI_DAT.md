@@ -1,4 +1,4 @@
-# Hướng dẫn Cài đặt & Triển khai Hệ thống Food Ordering (Cho máy mới)
+# Hướng dẫn Cài đặt & Triển khai Hệ thống BachHome (Cho máy mới)
 
 Tài liệu này hướng dẫn chi tiết cách cài đặt môi trường và chạy dự án khi chuyển sang một máy tính mới hoàn toàn.
 
@@ -29,7 +29,7 @@ Mở **Command Prompt (CMD)** hoặc **PowerShell** hoặc **Git Bash**:
 ```bash
 # Clone dự án về máy
 git clone <link-repo-cua-ban>
-cd food-ordering
+cd Bach
 ```
 
 ---
@@ -39,7 +39,7 @@ cd food-ordering
 Chúng ta sẽ dùng Docker Compose để chạy toàn bộ: 6 Databases, RabbitMQ, Eureka, và 7 Microservices.
 
 ### Bước 3.1: Khởi động hệ thống
-Tại thư mục gốc `food-ordering`, chạy lệnh:
+Tại thư mục gốc `Bach`, chạy lệnh:
 
 ```powershell
 docker-compose up -d --build
@@ -60,7 +60,7 @@ Khi chạy trên máy mới, Database sẽ trống trơn. Bạn cần nạp dữ
 Chạy các lệnh sau trong PowerShell (hoặc Terminal):
 
 ```powershell
-# 1. Nạp Service Menu (Danh mục, Món ăn)
+# 1. Nạp Service Menu (Danh mục, Sản phẩm)
 cat "SQL_Backup/menu_service.sql" | docker exec -i postgres-menu psql -U postgres -d food_ordering_menu
 
 # 2. Nạp Service Auth (Tài khoản users)

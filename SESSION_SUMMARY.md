@@ -1,4 +1,4 @@
-# 🎊 SESSION COMPLETE - Food Ordering System MVP
+# 🎊 SESSION COMPLETE - BachHome MVP
 
 **Date:** 26/11/2025  
 **Duration:** 1 session  
@@ -18,7 +18,7 @@
 
 ✅ **Microservices (6/6):**
 1. Service-Auth (8081) - JWT Authentication
-2. Service-Menu (8082) - Menu Management
+2. Service-Menu (8082) - Product Management
 3. Service-Order (8083) - Order Processing
 4. Service-Payment (8084) - Payment Handling
 5. Service-Inventory (8085) - Stock Management
@@ -52,7 +52,7 @@
 
 ### Start Backend
 ```bash
-cd food-ordering
+cd Bach
 docker-compose up -d
 ```
 

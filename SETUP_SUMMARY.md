@@ -1,6 +1,6 @@
 # ✅ Project Setup Summary
 
-## 🎉 Đã hoàn thành setup dự án Food Ordering System!
+## 🎉 Đã hoàn thành setup dự án BachHome!
 
 **Thời gian setup:** 26/11/2025  
 **Trạng thái:** ✅ Ready for Development
@@ -159,7 +159,7 @@
 ### Bước 1: Khởi động hệ thống
 
 ```bash
-cd food-ordering
+cd Bach
 docker-compose up -d
 ```
 
@@ -224,7 +224,7 @@ curl -X POST http://localhost:8080/api/auth/login \
 ## 📁 Project Structure
 
 ```
-food-ordering/
+Bach/
 ├── eureka-server/              ✅ Service Discovery
 │   ├── src/main/java/...
 │   ├── src/main/resources/
