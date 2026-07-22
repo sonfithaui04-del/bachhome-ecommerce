@@ -12,7 +12,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.foodordering</groupId>
+    <groupId>com.bachhome</groupId>
     <artifactId>eureka-server</artifactId>
     <version>1.0.0</version>
     <name>Eureka Server</name>

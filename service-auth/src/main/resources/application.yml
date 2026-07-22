@@ -7,7 +7,7 @@ spring:
   
   # Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5438/food_ordering_auth
+    url: jdbc:postgresql://localhost:5438/bachhome_auth
     username: postgres
     password: 10112004
     driver-class-name: org.postgresql.Driver
@@ -53,7 +53,7 @@ jwt:
 # Logging
 logging:
   level:
-    com.foodordering.auth: DEBUG
+    com.bachhome.auth: DEBUG
     org.springframework.security: DEBUG
   pattern:
     console: "[%d{yyyy-MM-dd HH:mm:ss}] [%level] [AUTH-SERVICE] [%X{traceId}] %msg%n"

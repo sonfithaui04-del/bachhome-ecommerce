@@ -1,8 +1,8 @@
-# Kubernetes Namespace for Food Ordering System
+# Kubernetes Namespace for BachHome
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: food-ordering
+  name: bachhome
   labels:
-    app: food-ordering
+    app: bachhome
     environment: production

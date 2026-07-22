@@ -7,7 +7,7 @@ spring:
   
   # Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5433/food_ordering_menu
+    url: jdbc:postgresql://localhost:5433/bachhome_menu
     username: postgres
     password: 10112004
     driver-class-name: org.postgresql.Driver
@@ -36,7 +36,7 @@ eureka:
 # Logging
 logging:
   level:
-    com.foodordering.menu: DEBUG
+    com.bachhome.menu: DEBUG
   pattern:
     console: "[%d{yyyy-MM-dd HH:mm:ss}] [%level] [MENU-SERVICE] [%X{traceId}] %msg%n"
 

@@ -9,12 +9,12 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     ports:
-      - "5672:5672"
+      - "25672:5672"
       - "15672:15672"
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
     networks:
-      - food-ordering-network
+      - bachhome-network
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 10s
@@ -30,7 +30,7 @@ services:
     ports:
       - "8761:8761"
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   # API Gateway
   api-gateway:
@@ -45,22 +45,22 @@ services:
     depends_on:
       - eureka-server
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   # Auth Service
   postgres-auth:
     image: postgres:15-alpine
     container_name: postgres-auth
     environment:
-      POSTGRES_DB: food_ordering_auth
+      POSTGRES_DB: bachhome_auth
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 10112004
     ports:
-      - "5438:5432"
+      - "15438:5432"
     volumes:
       - postgres-auth-data:/var/lib/postgresql/data
     networks:
-      - food-ordering-network
+      - bachhome-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -75,7 +75,7 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/food_ordering_auth
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-auth:5432/bachhome_auth
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 10112004
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
@@ -85,22 +85,22 @@ services:
       eureka-server:
         condition: service_started
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   # Menu Service
   postgres-menu:
     image: postgres:15-alpine
     container_name: postgres-menu
     environment:
-      POSTGRES_DB: food_ordering_menu
+      POSTGRES_DB: bachhome_menu
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 10112004
     ports:
-      - "5433:5432"
+      - "15433:5432"
     volumes:
       - postgres-menu-data:/var/lib/postgresql/data
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   service-menu:
     build:
@@ -110,7 +110,7 @@ services:
     ports:
       - "8082:8082"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-menu:5432/food_ordering_menu
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-menu:5432/bachhome_menu
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 10112004
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
@@ -118,22 +118,22 @@ services:
       - postgres-menu
       - eureka-server
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   # Order Service
   postgres-order:
     image: postgres:15-alpine
     container_name: postgres-order
     environment:
-      POSTGRES_DB: food_ordering_order
+      POSTGRES_DB: bachhome_order
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 10112004
     ports:
-      - "5434:5432"
+      - "15434:5432"
     volumes:
       - postgres-order-data:/var/lib/postgresql/data
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   service-order:
     build:
@@ -143,7 +143,7 @@ services:
     ports:
       - "8083:8083"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/food_ordering_order
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-order:5432/bachhome_order
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 10112004
       SPRING_RABBITMQ_HOST: rabbitmq
@@ -155,22 +155,22 @@ services:
       - rabbitmq
       - eureka-server
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   # Payment Service
   postgres-payment:
     image: postgres:15-alpine
     container_name: postgres-payment
     environment:
-      POSTGRES_DB: food_ordering_payment
+      POSTGRES_DB: bachhome_payment
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 10112004
     ports:
-      - "5435:5432"
+      - "15435:5432"
     volumes:
       - postgres-payment-data:/var/lib/postgresql/data
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   service-payment:
     build:
@@ -180,7 +180,7 @@ services:
     ports:
       - "8084:8084"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-payment:5432/food_ordering_payment
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-payment:5432/bachhome_payment
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 10112004
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
@@ -191,22 +191,22 @@ services:
       - postgres-payment
       - eureka-server
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   # Inventory Service
   postgres-inventory:
     image: postgres:15-alpine
     container_name: postgres-inventory
     environment:
-      POSTGRES_DB: food_ordering_inventory
+      POSTGRES_DB: bachhome_inventory
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 10112004
     ports:
-      - "5436:5432"
+      - "15436:5432"
     volumes:
       - postgres-inventory-data:/var/lib/postgresql/data
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   service-inventory:
     build:
@@ -216,7 +216,7 @@ services:
     ports:
       - "8085:8085"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/food_ordering_inventory
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-inventory:5432/bachhome_inventory
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 10112004
       SPRING_RABBITMQ_HOST: rabbitmq
@@ -228,22 +228,22 @@ services:
       - rabbitmq
       - eureka-server
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   # Notification Service
   postgres-notification:
     image: postgres:15-alpine
     container_name: postgres-notification
     environment:
-      POSTGRES_DB: food_ordering_notification
+      POSTGRES_DB: bachhome_notification
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 10112004
     ports:
-      - "5437:5432"
+      - "15437:5432"
     volumes:
       - postgres-notification-data:/var/lib/postgresql/data
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   service-socket:
     build: ./service-socket
@@ -257,7 +257,7 @@ services:
       - eureka-server
       - rabbitmq
     networks:
-      - food-ordering-network
+      - bachhome-network
 
   service-notification:
     build:
@@ -267,7 +267,7 @@ services:
     ports:
       - "8086:8086"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-notification:5432/food_ordering_notification
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-notification:5432/bachhome_notification
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 10112004
       SPRING_RABBITMQ_HOST: rabbitmq
@@ -279,7 +279,7 @@ services:
       - rabbitmq
       - eureka-server
     networks:
-      - food-ordering-network
+      - bachhome-network
 
 volumes:
   postgres-auth-data:
@@ -291,5 +291,5 @@ volumes:
   rabbitmq-data:
 
 networks:
-  food-ordering-network:
+  bachhome-network:
     driver: bridge

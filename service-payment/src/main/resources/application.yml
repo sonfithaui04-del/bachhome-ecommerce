@@ -4,7 +4,7 @@ spring:
   application:
     name: service-payment
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres-payment:5432/food_ordering_payment}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres-payment:5432/bachhome_payment}
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD:10112004}
   jpa:

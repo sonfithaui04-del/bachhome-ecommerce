@@ -4,7 +4,7 @@ spring:
   application:
     name: service-notification
   datasource:
-    url: jdbc:postgresql://localhost:5437/food_ordering_notification
+    url: jdbc:postgresql://localhost:5437/bachhome_notification
     username: postgres
     password: 10112004
   jpa:

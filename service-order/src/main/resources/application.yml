@@ -7,7 +7,7 @@ spring:
   
   # Database Configuration
   datasource:
-    url: jdbc:postgresql://localhost:5434/food_ordering_order
+    url: jdbc:postgresql://localhost:5434/bachhome_order
     username: postgres
     password: 10112004
     driver-class-name: org.postgresql.Driver
@@ -43,7 +43,7 @@ eureka:
 # Logging
 logging:
   level:
-    com.foodordering.order: DEBUG
+    com.bachhome.order: DEBUG
   pattern:
     console: "[%d{yyyy-MM-dd HH:mm:ss}] [%level] [ORDER-SERVICE] [%X{traceId}] %msg%n"
 

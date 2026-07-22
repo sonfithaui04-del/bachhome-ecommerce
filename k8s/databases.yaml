@@ -7,7 +7,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-auth
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   serviceName: postgres-auth
   replicas: 1
@@ -26,7 +26,7 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: food_ordering_auth
+              value: bachhome_auth
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -61,7 +61,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-auth
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: postgres-auth
@@ -76,7 +76,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-menu
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   serviceName: postgres-menu
   replicas: 1
@@ -95,7 +95,7 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: food_ordering_menu
+              value: bachhome_menu
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -130,7 +130,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-menu
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: postgres-menu
@@ -145,7 +145,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-order
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   serviceName: postgres-order
   replicas: 1
@@ -164,7 +164,7 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: food_ordering_order
+              value: bachhome_order
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -199,7 +199,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-order
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: postgres-order
@@ -214,7 +214,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-payment
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   serviceName: postgres-payment
   replicas: 1
@@ -233,7 +233,7 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: food_ordering_payment
+              value: bachhome_payment
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -268,7 +268,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-payment
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: postgres-payment
@@ -283,7 +283,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-inventory
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   serviceName: postgres-inventory
   replicas: 1
@@ -302,7 +302,7 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: food_ordering_inventory
+              value: bachhome_inventory
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -337,7 +337,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-inventory
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: postgres-inventory
@@ -352,7 +352,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres-notification
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   serviceName: postgres-notification
   replicas: 1
@@ -371,7 +371,7 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: food_ordering_notification
+              value: bachhome_notification
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -406,7 +406,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres-notification
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: postgres-notification
@@ -423,7 +423,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: rabbitmq
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: rabbitmq
 spec:
@@ -475,7 +475,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: rabbitmq
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: rabbitmq

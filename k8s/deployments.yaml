@@ -5,7 +5,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: eureka-server
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: eureka-server
 spec:
@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: eureka-server
-          image: food-ordering-eureka-server:latest
+          image: bachhome-eureka-server:latest
           imagePullPolicy: Never  # Use local image
           ports:
             - containerPort: 8761
@@ -49,7 +49,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: eureka-server
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: eureka-server
@@ -66,7 +66,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api-gateway
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: api-gateway
 spec:
@@ -81,7 +81,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: food-ordering-api-gateway:latest
+          image: bachhome-api-gateway:latest
           imagePullPolicy: Never  # Use local image
           ports:
             - containerPort: 8080
@@ -110,7 +110,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: api-gateway
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: api-gateway
@@ -127,7 +127,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-auth
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: service-auth
 spec:
@@ -142,13 +142,13 @@ spec:
     spec:
       containers:
         - name: service-auth
-          image: food-ordering-service-auth:latest
+          image: bachhome-service-auth:latest
           imagePullPolicy: Never  # Use local image
           ports:
             - containerPort: 8081
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres-auth:5432/food_ordering_auth"
+              value: "jdbc:postgresql://postgres-auth:5432/bachhome_auth"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -182,7 +182,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-auth
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: service-auth
@@ -199,7 +199,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-menu
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: service-menu
 spec:
@@ -214,13 +214,13 @@ spec:
     spec:
       containers:
         - name: service-menu
-          image: food-ordering-service-menu:latest
+          image: bachhome-service-menu:latest
           imagePullPolicy: Never  # Use local image
           ports:
             - containerPort: 8082
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres-menu:5432/food_ordering_menu"
+              value: "jdbc:postgresql://postgres-menu:5432/bachhome_menu"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -249,7 +249,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-menu
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: service-menu
@@ -266,7 +266,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-order
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: service-order
 spec:
@@ -281,13 +281,13 @@ spec:
     spec:
       containers:
         - name: service-order
-          image: food-ordering-service-order:latest
+          image: bachhome-service-order:latest
           imagePullPolicy: Never  # Use local image
           ports:
             - containerPort: 8083
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres-order:5432/food_ordering_order"
+              value: "jdbc:postgresql://postgres-order:5432/bachhome_order"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -328,7 +328,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-order
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: service-order
@@ -345,7 +345,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-payment
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: service-payment
 spec:
@@ -360,13 +360,13 @@ spec:
     spec:
       containers:
         - name: service-payment
-          image: food-ordering-service-payment:latest
+          image: bachhome-service-payment:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8084
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres-payment:5432/food_ordering_payment"
+              value: "jdbc:postgresql://postgres-payment:5432/bachhome_payment"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -401,7 +401,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-payment
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: service-payment
@@ -418,7 +418,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-inventory
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: service-inventory
 spec:
@@ -433,13 +433,13 @@ spec:
     spec:
       containers:
         - name: service-inventory
-          image: food-ordering-service-inventory:latest
+          image: bachhome-service-inventory:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8085
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres-inventory:5432/food_ordering_inventory"
+              value: "jdbc:postgresql://postgres-inventory:5432/bachhome_inventory"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -480,7 +480,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-inventory
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: service-inventory
@@ -497,7 +497,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-notification
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: service-notification
 spec:
@@ -512,13 +512,13 @@ spec:
     spec:
       containers:
         - name: service-notification
-          image: food-ordering-service-notification:latest
+          image: bachhome-service-notification:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8086
           env:
             - name: SPRING_DATASOURCE_URL
-              value: "jdbc:postgresql://postgres-notification:5432/food_ordering_notification"
+              value: "jdbc:postgresql://postgres-notification:5432/bachhome_notification"
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -559,7 +559,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-notification
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: service-notification
@@ -576,7 +576,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: service-socket
-  namespace: food-ordering
+  namespace: bachhome
   labels:
     app: service-socket
 spec:
@@ -591,7 +591,7 @@ spec:
     spec:
       containers:
         - name: service-socket
-          image: food-ordering-service-socket:latest
+          image: bachhome-service-socket:latest
           imagePullPolicy: Never
           ports:
             - containerPort: 8089
@@ -626,7 +626,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: service-socket
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   selector:
     app: service-socket

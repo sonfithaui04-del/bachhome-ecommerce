@@ -2,8 +2,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: food-ordering-ingress
-  namespace: food-ordering
+  name: bachhome-ingress
+  namespace: bachhome
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/cors-allow-origin: "*"
@@ -12,7 +12,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: food-ordering.local
+    - host: bachhome.local
       http:
         paths:
           - path: /api
@@ -36,7 +36,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: api-gateway-hpa
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
@@ -64,7 +64,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: service-order-hpa
-  namespace: food-ordering
+  namespace: bachhome
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
