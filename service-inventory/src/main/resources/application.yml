@@ -7,9 +7,13 @@ spring:
     url: jdbc:postgresql://localhost:5436/bachhome_inventory
     username: postgres
     password: 10112004
+  sql:
+    init:
+      mode: always
   jpa:
     hibernate:
       ddl-auto: update
+    defer-datasource-initialization: true
     show-sql: true
 eureka:
   client:
