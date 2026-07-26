@@ -297,7 +297,7 @@ export default function OrderManagement() {
                             <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                               <img 
                                 src={item.imageUrl || 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=100&q=80'} 
-                                alt={item.menuItemName}
+                                alt={item.productName}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   e.target.onerror = null;
@@ -306,7 +306,7 @@ export default function OrderManagement() {
                               />
                             </div>
                             <div>
-                              <span className="font-medium text-gray-700 block">{item.menuItemName}</span>
+                              <span className="font-medium text-gray-700 block">{item.productName}</span>
                               <span className="text-xs text-gray-500">x{item.quantity} • {item.price?.toLocaleString('vi-VN')}đ/sản phẩm</span>
                             </div>
                           </div>

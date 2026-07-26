@@ -1,8 +1,9 @@
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 
-// URL của service-socket (qua API Gateway port 8080)
-const SOCKET_URL = 'http://localhost:8080/ws';
+// URL của service-socket (qua API Gateway). Mặc định đi qua proxy của Vite (/ws)
+// để không phụ thuộc cổng gateway; đặt VITE_SOCKET_URL nếu cần trỏ thẳng.
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || '/ws';
 
 let stompClient = null;
 let notificationCallback = null;

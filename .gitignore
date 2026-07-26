@@ -68,3 +68,11 @@ npm-debug.log*
 # Application specific
 application-local.yml
 application-local.properties
+
+# Environment / secrets (KHÔNG commit khóa API)
+.env
+.env.local
+*.env
+
+# Docker override cục bộ (mỗi máy tự cấu hình cổng)
+docker-compose.override.yml

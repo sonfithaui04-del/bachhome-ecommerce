@@ -13,13 +13,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderItemRequest {
     @NotNull(message = "Menu Item ID không được để trống")
-    private Long menuItemId;
+    private Long productId;
     
     @NotNull(message = "Số lượng không được để trống")
     @Min(value = 1, message = "Số lượng phải >= 1")
     private Integer quantity;
     
-    private String menuItemName;
+    private String productName;
     private java.math.BigDecimal price;
     private String imageUrl;
 }

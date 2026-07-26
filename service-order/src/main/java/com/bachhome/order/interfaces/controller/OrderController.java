@@ -86,9 +86,9 @@ public class OrderController {
             }
         }
         
-        // Logic trừ/hoàn nguyên liệu (Event-Driven)
+        // Logic trừ/hoàn tồn kho (Event-Driven)
         if (oldStatus == OrderStatus.PENDING && newStatus == OrderStatus.CONFIRMED) {
-            // PENDING -> CONFIRMED: Gửi sự kiện để trừ nguyên liệu (Async)
+            // PENDING -> CONFIRMED: Gửi sự kiện để trừ tồn kho (Async)
             log.info("[ORDER-CONTROLLER] Confirming order {} - publishing OrderConfirmedEvent", orderId);
             
             com.bachhome.order.application.dto.event.OrderConfirmedEvent event = com.bachhome.order.application.dto.event.OrderConfirmedEvent.builder()
@@ -97,7 +97,7 @@ public class OrderController {
                     .email(order.getEmail())
                     .items(order.getItems().stream()
                             .map(item -> com.bachhome.order.application.dto.event.OrderConfirmedEvent.OrderItemEventDto.builder()
-                                    .menuItemId(item.getMenuItemId())
+                                    .productId(item.getProductId())
                                     .quantity(item.getQuantity())
                                     .build())
                             .collect(Collectors.toList()))
@@ -110,7 +110,7 @@ public class OrderController {
             );
             
         } else if (oldStatus == OrderStatus.CONFIRMED && newStatus == OrderStatus.CANCELLED) {
-            // CONFIRMED -> CANCELLED: Hoàn lại nguyên liệu (TODO: Implement Async Restore)
+            // CONFIRMED -> CANCELLED: Hoàn lại tồn kho (TODO: Implement Async Restore)
             log.info("[ORDER-CONTROLLER] Cancelling confirmed order {} - sending restore event (Not Implemented yet)", orderId);
             // restoreInventoryForOrder(order); // Commented out for now
         }
@@ -147,39 +147,39 @@ public class OrderController {
     }
     
     /**
-     * Trừ nguyên liệu cho đơn hàng
+     * Trừ tồn kho cho đơn hàng
      */
     private void deductInventoryForOrder(Order order) {
-        List<InventoryServiceClient.IngredientDeductionDto> totalDeductions = new java.util.ArrayList<>();
+        List<InventoryServiceClient.InventoryDeductionDto> totalDeductions = new java.util.ArrayList<>();
         
         for (OrderItem item : order.getItems()) {
-            // Lấy công thức
-            List<InventoryServiceClient.RecipeDto> recipes = inventoryServiceClient.getRecipeByMenuItemId(item.getMenuItemId());
-            
-            // Tính nguyên liệu cần = công thức × số lượng món
-            for (InventoryServiceClient.RecipeDto recipe : recipes) {
-                java.math.BigDecimal requiredQuantity = recipe.getQuantity()
-                        .multiply(java.math.BigDecimal.valueOf(item.getQuantity()));
-                
-                // Tìm xem ingredient này đã có trong list chưa
-                InventoryServiceClient.IngredientDeductionDto existing = totalDeductions.stream()
-                        .filter(d -> d.getIngredientId().equals(recipe.getIngredientId()))
-                        .findFirst()
-                        .orElse(null);
-                
-                if (existing != null) {
-                   // Cộng dồn
-                    existing.setQuantity(existing.getQuantity().add(requiredQuantity));
-                } else {
-                    // Thêm mới
-                    totalDeductions.add(InventoryServiceClient.IngredientDeductionDto.builder()
-                            .ingredientId(recipe.getIngredientId())
-                            .quantity(requiredQuantity)
-                            .build());
-                }
+            // Mỗi sản phẩm bán ra trừ thẳng tồn kho của chính sản phẩm đó
+            InventoryServiceClient.InventoryItemDto stock =
+                    inventoryServiceClient.getInventoryItemByProductId(item.getProductId());
+
+            if (stock == null) {
+                log.warn("Sản phẩm {} chưa gắn tồn kho, bỏ qua trừ kho", item.getProductId());
+                continue;
+            }
+
+            java.math.BigDecimal requiredQuantity = java.math.BigDecimal.valueOf(item.getQuantity());
+
+            // Cộng dồn nếu sản phẩm xuất hiện nhiều lần trong cùng một đơn
+            InventoryServiceClient.InventoryDeductionDto existing = totalDeductions.stream()
+                    .filter(d -> d.getInventoryItemId().equals(stock.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (existing != null) {
+                existing.setQuantity(existing.getQuantity().add(requiredQuantity));
+            } else {
+                totalDeductions.add(InventoryServiceClient.InventoryDeductionDto.builder()
+                        .inventoryItemId(stock.getId())
+                        .quantity(requiredQuantity)
+                        .build());
             }
         }
-        
+
         if (!totalDeductions.isEmpty()) {
             inventoryServiceClient.deductInventory(order.getId(), totalDeductions);
         }
@@ -267,34 +267,37 @@ public class OrderController {
     }
 
     /**
-     * Hoàn lại nguyên liệu cho đơn hàng
+     * Hoàn lại tồn kho cho đơn hàng
      */
     private void restoreInventoryForOrder(Order order) {
-        List<InventoryServiceClient.IngredientDeductionDto> totalDeductions = new java.util.ArrayList<>();
-        
+        List<InventoryServiceClient.InventoryDeductionDto> totalDeductions = new java.util.ArrayList<>();
+
         for (OrderItem item : order.getItems()) {
-            List<InventoryServiceClient.RecipeDto> recipes = inventoryServiceClient.getRecipeByMenuItemId(item.getMenuItemId());
-            
-            for (InventoryServiceClient.RecipeDto recipe : recipes) {
-                java.math.BigDecimal requiredQuantity = recipe.getQuantity()
-                        .multiply(java.math.BigDecimal.valueOf(item.getQuantity()));
-                
-                InventoryServiceClient.IngredientDeductionDto existing = totalDeductions.stream()
-                        .filter(d -> d.getIngredientId().equals(recipe.getIngredientId()))
-                        .findFirst()
-                        .orElse(null);
-                
-                if (existing != null) {
-                    existing.setQuantity(existing.getQuantity().add(requiredQuantity));
-                } else {
-                    totalDeductions.add(InventoryServiceClient.IngredientDeductionDto.builder()
-                            .ingredientId(recipe.getIngredientId())
-                            .quantity(requiredQuantity)
-                            .build());
-                }
+            InventoryServiceClient.InventoryItemDto stock =
+                    inventoryServiceClient.getInventoryItemByProductId(item.getProductId());
+
+            if (stock == null) {
+                log.warn("Sản phẩm {} chưa gắn tồn kho, bỏ qua hoàn kho", item.getProductId());
+                continue;
+            }
+
+            java.math.BigDecimal requiredQuantity = java.math.BigDecimal.valueOf(item.getQuantity());
+
+            InventoryServiceClient.InventoryDeductionDto existing = totalDeductions.stream()
+                    .filter(d -> d.getInventoryItemId().equals(stock.getId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (existing != null) {
+                existing.setQuantity(existing.getQuantity().add(requiredQuantity));
+            } else {
+                totalDeductions.add(InventoryServiceClient.InventoryDeductionDto.builder()
+                        .inventoryItemId(stock.getId())
+                        .quantity(requiredQuantity)
+                        .build());
             }
         }
-        
+
         if (!totalDeductions.isEmpty()) {
             inventoryServiceClient.restoreInventory(order.getId(), totalDeductions);
         }
@@ -395,8 +398,8 @@ public class OrderController {
         if (order.getItems() != null) {
             List<OrderItemDto> itemDtos = order.getItems().stream()
                 .map(item -> OrderItemDto.builder()
-                    .menuItemId(item.getMenuItemId())
-                    .menuItemName(item.getMenuItemName())
+                    .productId(item.getProductId())
+                    .productName(item.getProductName())
                     .quantity(item.getQuantity())
                     .price(item.getPrice())
                     .subtotal(item.getSubtotal())

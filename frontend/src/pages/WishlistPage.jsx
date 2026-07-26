@@ -37,7 +37,7 @@ export default function WishlistPage() {
             <h3 className="text-2xl font-bold text-gray-800 mb-2">Chưa có sản phẩm yêu thích</h3>
             <p className="text-gray-500 mb-6">Hãy khám phá và lưu lại những sản phẩm bạn thích nhé!</p>
             <Link
-              to="/menu"
+              to="/products"
               className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-full font-bold shadow-lg shadow-emerald-500/30 hover:bg-emerald-600 transition-colors"
             >
               Khám phá sản phẩm <ArrowRight size={20} />

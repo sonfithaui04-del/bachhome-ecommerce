@@ -27,7 +27,7 @@ export default function LoginPage() {
 
     try {
       await login(formData)
-      navigate('/menu')
+      navigate('/products')
     } catch (err) {
       setError(err.response?.data?.message || 'Email hoặc mật khẩu không đúng')
     } finally {

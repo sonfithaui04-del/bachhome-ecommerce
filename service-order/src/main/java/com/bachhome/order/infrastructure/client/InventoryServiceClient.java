@@ -22,63 +22,62 @@ import java.util.List;
 @Service
 @Slf4j
 public class InventoryServiceClient {
-    
+
     private final RestTemplate restTemplate;
     private final String inventoryServiceUrl;
-    
+
     public InventoryServiceClient(
             RestTemplate restTemplate,
             @Value("${inventory.service.url:http://service-inventory:8085}") String inventoryServiceUrl) {
         this.restTemplate = restTemplate;
         this.inventoryServiceUrl = inventoryServiceUrl;
     }
-    
+
     /**
-     * Lấy công thức món ăn từ Inventory Service
+     * Lấy mặt hàng trong kho gắn với một sản phẩm đang bán.
+     * Trả về null nếu sản phẩm chưa được gắn kho.
      */
-    public List<RecipeDto> getRecipeByMenuItemId(Long menuItemId) {
+    public InventoryItemDto getInventoryItemByProductId(Long productId) {
         try {
-            String url = inventoryServiceUrl + "/recipes/menu-item/" + menuItemId;
-            log.info("[INVENTORY-CLIENT] Getting recipe for menuItemId: {}", menuItemId);
-            
-            ResponseEntity<RecipeDto[]> response = restTemplate.getForEntity(url, RecipeDto[].class);
-            return response.getBody() != null ? List.of(response.getBody()) : List.of();
+            String url = inventoryServiceUrl + "/inventory-items/by-product/" + productId;
+            log.info("[INVENTORY-CLIENT] Getting stock for productId: {}", productId);
+            return restTemplate.getForObject(url, InventoryItemDto.class);
         } catch (Exception e) {
-            log.warn("[INVENTORY-CLIENT] Failed to get recipe for menuItemId {}: {}", menuItemId, e.getMessage());
-            return List.of();
-        }
-    }
-    
-    /**
-     * Lấy thông tin nguyên liệu
-     */
-    public IngredientDto getIngredientById(Long ingredientId) {
-        try {
-            String url = inventoryServiceUrl + "/ingredients/" + ingredientId;
-            return restTemplate.getForObject(url, IngredientDto.class);
-        } catch (Exception e) {
-            log.warn("[INVENTORY-CLIENT] Failed to get ingredient {}: {}", ingredientId, e.getMessage());
+            log.warn("[INVENTORY-CLIENT] Failed to get stock for productId {}: {}", productId, e.getMessage());
             return null;
         }
     }
 
     /**
-     * Trừ nguyên liệu
+     * Lấy thông tin một mặt hàng trong kho theo ID
      */
-    public void deductInventory(Long orderId, List<IngredientDeductionDto> ingredients) {
+    public InventoryItemDto getInventoryItemById(Long inventoryItemId) {
+        try {
+            String url = inventoryServiceUrl + "/inventory-items/" + inventoryItemId;
+            return restTemplate.getForObject(url, InventoryItemDto.class);
+        } catch (Exception e) {
+            log.warn("[INVENTORY-CLIENT] Failed to get inventory item {}: {}", inventoryItemId, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Trừ tồn kho
+     */
+    public void deductInventory(Long orderId, List<InventoryDeductionDto> inventoryItems) {
         try {
             String url = inventoryServiceUrl + "/inventory/deduct";
             log.info("[INVENTORY-CLIENT] Deducting inventory for order: {}", orderId);
-            
+
             DeductInventoryRequest request = DeductInventoryRequest.builder()
                     .orderId(orderId)
-                    .ingredients(ingredients)
+                    .inventoryItems(inventoryItems)
                     .build();
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<DeductInventoryRequest> entity = new HttpEntity<>(request, headers);
-            
+
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
             log.info("[INVENTORY-CLIENT] Deduct response: {}", response.getBody());
         } catch (Exception e) {
@@ -86,69 +85,58 @@ public class InventoryServiceClient {
             throw new RuntimeException("Failed to deduct inventory: " + e.getMessage());
         }
     }
-    
+
     /**
-     * Hoàn lại nguyên liệu
+     * Hoàn lại tồn kho
      */
-    public void restoreInventory(Long orderId, List<IngredientDeductionDto> ingredients) {
+    public void restoreInventory(Long orderId, List<InventoryDeductionDto> inventoryItems) {
         try {
             String url = inventoryServiceUrl + "/inventory/restore";
             log.info("[INVENTORY-CLIENT] Restoring inventory for order: {}", orderId);
-            
+
             DeductInventoryRequest request = DeductInventoryRequest.builder()
                     .orderId(orderId)
-                    .ingredients(ingredients)
+                    .inventoryItems(inventoryItems)
                     .build();
-            
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<DeductInventoryRequest> entity = new HttpEntity<>(request, headers);
-            
+
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
             log.info("[INVENTORY-CLIENT] Restore response: {}", response.getBody());
         } catch (Exception e) {
             log.error("[INVENTORY-CLIENT] Failed to restore inventory: {}", e.getMessage());
         }
     }
-    
+
     // DTOs
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class RecipeDto {
-        private Long id;
-        private Long menuItemId;
-        private Long ingredientId;
-        private String ingredientName;
+    public static class InventoryDeductionDto {
+        private Long inventoryItemId;
         private BigDecimal quantity;
-    }
-    
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class IngredientDeductionDto {
-        private Long ingredientId;
-        private BigDecimal quantity;
-    }
-    
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class DeductInventoryRequest {
-        private Long orderId;
-        private List<IngredientDeductionDto> ingredients;
     }
 
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class IngredientDto {
+    public static class DeductInventoryRequest {
+        private Long orderId;
+        private List<InventoryDeductionDto> inventoryItems;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class InventoryItemDto {
         private Long id;
         private String name;
+        private Long productId;
         private BigDecimal quantity;
     }
 }

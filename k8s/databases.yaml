@@ -75,18 +75,18 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: postgres-menu
+  name: postgres-product
   namespace: bachhome
 spec:
-  serviceName: postgres-menu
+  serviceName: postgres-product
   replicas: 1
   selector:
     matchLabels:
-      app: postgres-menu
+      app: postgres-product
   template:
     metadata:
       labels:
-        app: postgres-menu
+        app: postgres-product
     spec:
       containers:
         - name: postgres
@@ -95,7 +95,7 @@ spec:
             - containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: bachhome_menu
+              value: bachhome_product
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
@@ -107,7 +107,7 @@ spec:
                   name: db-credentials
                   key: POSTGRES_PASSWORD
           volumeMounts:
-            - name: postgres-menu-storage
+            - name: postgres-product-storage
               mountPath: /var/lib/postgresql/data
           resources:
             requests:
@@ -118,7 +118,7 @@ spec:
               cpu: "500m"
   volumeClaimTemplates:
     - metadata:
-        name: postgres-menu-storage
+        name: postgres-product-storage
       spec:
         accessModes: ["ReadWriteOnce"]
         resources:
@@ -129,11 +129,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: postgres-menu
+  name: postgres-product
   namespace: bachhome
 spec:
   selector:
-    app: postgres-menu
+    app: postgres-product
   ports:
     - port: 5432
       targetPort: 5432

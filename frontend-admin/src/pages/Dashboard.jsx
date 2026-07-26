@@ -27,8 +27,8 @@ export default function Dashboard() {
   const [recentOrders, setRecentOrders] = useState([])
   const [lowStock, setLowStock] = useState([])
   const [counts, setCounts] = useState({ users: 0, menu: 0 })
-  const [menuItems, setMenuItems] = useState([])
-  const [ingredients, setIngredients] = useState([])
+  const [products, setProducts] = useState([])
+  const [inventoryItems, setInventoryItems] = useState([])
   const [loading, setLoading] = useState(true)
   const [timeFilter, setTimeFilter] = useState('day')
 
@@ -42,24 +42,24 @@ export default function Dashboard() {
   const loadDashboardData = async () => {
     try {
       const headers = { Authorization: `Bearer ${getToken()}` }
-      const [menuRes, usersRes, ordersRes, ingRes] = await Promise.allSettled([
-        axios.get('/api/menu?availableOnly=false', { headers }),
+      const [productRes, usersRes, ordersRes, ingRes] = await Promise.allSettled([
+        axios.get('/api/products?availableOnly=false', { headers }),
         axios.get('/api/users', { headers }),
         axios.get('/api/orders', { headers }),
-        axios.get('/api/ingredients', { headers }),
+        axios.get('/api/inventory-items', { headers }),
       ])
 
       const allOrders = ordersRes.status === 'fulfilled' ? (ordersRes.value.data || []) : []
-      const ingredients = ingRes.status === 'fulfilled' ? (ingRes.value.data || []) : []
+      const inventoryItems = ingRes.status === 'fulfilled' ? (ingRes.value.data || []) : []
 
       setOrders(allOrders)
-      setMenuItems(menuRes.status === 'fulfilled' ? (menuRes.value.data || []) : [])
-      setIngredients(ingredients)
+      setProducts(productRes.status === 'fulfilled' ? (productRes.value.data || []) : [])
+      setInventoryItems(inventoryItems)
       setRecentOrders([...allOrders].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5))
-      setLowStock(ingredients.filter(i => i.isLowStock || (i.minQuantity != null && Number(i.quantity) <= Number(i.minQuantity))))
+      setLowStock(inventoryItems.filter(i => i.isLowStock || (i.minQuantity != null && Number(i.quantity) <= Number(i.minQuantity))))
       setCounts({
         users: usersRes.status === 'fulfilled' ? (usersRes.value.data?.length || 0) : 0,
-        menu: menuRes.status === 'fulfilled' ? (menuRes.value.data?.length || 0) : 0,
+        menu: productRes.status === 'fulfilled' ? (productRes.value.data?.length || 0) : 0,
       })
     } catch (e) {
       console.error('Dashboard load error', e)
@@ -96,7 +96,7 @@ export default function Dashboard() {
     // top products from order items
     const counter = {}
     orders.forEach(o => (o.items || []).forEach(it => {
-      const n = it.menuItemName || `#${it.menuItemId}`
+      const n = it.productName || `#${it.productId}`
       counter[n] = (counter[n] || 0) + (it.quantity || 0)
     }))
     const topProducts = Object.entries(counter).map(([name, qty]) => ({ name, qty })).sort((a, b) => b.qty - a.qty).slice(0, 5)
@@ -104,10 +104,10 @@ export default function Dashboard() {
 
     // Lợi nhuận ước tính (giá vốn lấy từ kho theo tên; nếu không có thì ước tính 75% giá bán)
     const costByName = {}
-    ingredients.forEach(g => { if (g.costPerUnit != null) costByName[(g.name || '').trim().toLowerCase()] = Number(g.costPerUnit) })
+    inventoryItems.forEach(g => { if (g.costPerUnit != null) costByName[(g.name || '').trim().toLowerCase()] = Number(g.costPerUnit) })
     let estCost = 0
     orders.filter(isRevenue).forEach(o => (o.items || []).forEach(it => {
-      const c = costByName[(it.menuItemName || '').trim().toLowerCase()]
+      const c = costByName[(it.productName || '').trim().toLowerCase()]
       const unitCost = c != null ? c : (it.price || 0) * 0.75
       estCost += unitCost * (it.quantity || 0)
     }))
@@ -116,10 +116,10 @@ export default function Dashboard() {
 
     // Doanh thu theo danh mục
     const catOf = {}
-    menuItems.forEach(m => { catOf[m.id] = m.categoryName || 'Khác' })
+    products.forEach(m => { catOf[m.id] = m.categoryName || 'Khác' })
     const catRev = {}
     orders.filter(isRevenue).forEach(o => (o.items || []).forEach(it => {
-      const cat = catOf[it.menuItemId] || 'Khác'
+      const cat = catOf[it.productId] || 'Khác'
       catRev[cat] = (catRev[cat] || 0) + (it.subtotal || (it.price || 0) * (it.quantity || 0))
     }))
     const revenueByCategory = Object.entries(catRev).map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value)
@@ -138,7 +138,7 @@ export default function Dashboard() {
 
     return { totalRevenue, aov, pending, revGrowth: growth(revCur, revPrev), ordGrowth: growth(ordCur, ordPrev), statusData, topProducts, maxQty,
       estProfit, estMargin, revenueByCategory, maxCatRev, revenueByPayment, completedRate, cancelRate }
-  }, [orders, menuItems, ingredients])
+  }, [orders, products, inventoryItems])
 
   // ===== Time-series chart data =====
   const chartData = useMemo(() => {

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * DTO cho việc trừ nguyên liệu khi confirm order
+ * DTO cho việc trừ mặt hàng trong kho khi confirm order
  */
 @Data
 @Builder
@@ -18,14 +18,14 @@ import java.util.List;
 public class DeductInventoryDto {
     
     private Long orderId; // ID đơn hàng (để tracking)
-    private List<IngredientDeductionDto> ingredients;
+    private List<InventoryDeductionDto> inventoryItems;
     
     @Data
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class IngredientDeductionDto {
-        private Long ingredientId;
+    public static class InventoryDeductionDto {
+        private Long inventoryItemId;
         private BigDecimal quantity; // Số lượng cần trừ
     }
 }

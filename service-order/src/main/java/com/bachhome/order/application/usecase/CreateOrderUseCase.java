@@ -39,8 +39,8 @@ public class CreateOrderUseCase {
         
         for (OrderItemRequest itemReq : request.getItems()) {
             OrderItem item = OrderItem.builder()
-                    .menuItemId(itemReq.getMenuItemId())
-                    .menuItemName(itemReq.getMenuItemName() != null ? itemReq.getMenuItemName() : "Item " + itemReq.getMenuItemId())
+                    .productId(itemReq.getProductId())
+                    .productName(itemReq.getProductName() != null ? itemReq.getProductName() : "Item " + itemReq.getProductId())
                     .quantity(itemReq.getQuantity())
                     .price(itemReq.getPrice() != null ? itemReq.getPrice() : BigDecimal.valueOf(50000))
                     .imageUrl(itemReq.getImageUrl())
@@ -104,8 +104,8 @@ public class CreateOrderUseCase {
 
     private OrderItemDto toItemDto(OrderItem item) {
         return OrderItemDto.builder()
-                .menuItemId(item.getMenuItemId())
-                .menuItemName(item.getMenuItemName())
+                .productId(item.getProductId())
+                .productName(item.getProductName())
                 .quantity(item.getQuantity())
                 .price(item.getPrice())
                 .subtotal(item.getSubtotal())
@@ -115,23 +115,21 @@ public class CreateOrderUseCase {
 
     private void checkInventory(OrderItem item) {
         try {
-            java.util.List<com.bachhome.order.infrastructure.client.InventoryServiceClient.RecipeDto> recipes = inventoryServiceClient.getRecipeByMenuItemId(item.getMenuItemId());
-            
-            for (com.bachhome.order.infrastructure.client.InventoryServiceClient.RecipeDto recipe : recipes) {
-                BigDecimal requiredQty = recipe.getQuantity().multiply(BigDecimal.valueOf(item.getQuantity()));
-                
-                com.bachhome.order.infrastructure.client.InventoryServiceClient.IngredientDto ingredient = inventoryServiceClient.getIngredientById(recipe.getIngredientId());
-                
-                if (ingredient == null) {
-                    log.warn("Ingredient {} not found, skipping check", recipe.getIngredientId());
-                    continue;
-                }
-                
-                if (ingredient.getQuantity().compareTo(requiredQty) < 0) {
-                    throw new RuntimeException("Insufficient inventory for item: " + item.getMenuItemName() + 
-                        " (Required: " + requiredQty + " " + ingredient.getName() + 
-                        ", Available: " + ingredient.getQuantity() + ")");
-                }
+            com.bachhome.order.infrastructure.client.InventoryServiceClient.InventoryItemDto stock =
+                    inventoryServiceClient.getInventoryItemByProductId(item.getProductId());
+
+            // Sản phẩm chưa được gắn với mặt hàng trong kho thì bỏ qua kiểm tra
+            if (stock == null || stock.getQuantity() == null) {
+                log.warn("Sản phẩm {} chưa gắn tồn kho, bỏ qua kiểm tra", item.getProductId());
+                return;
+            }
+
+            BigDecimal requiredQty = BigDecimal.valueOf(item.getQuantity());
+
+            if (stock.getQuantity().compareTo(requiredQty) < 0) {
+                throw new RuntimeException("Insufficient inventory for item: " + item.getProductName() +
+                    " (Required: " + requiredQty +
+                    ", Available: " + stock.getQuantity() + ")");
             }
         } catch (Exception e) {
             log.error("Inventory check failed: {}", e.getMessage());

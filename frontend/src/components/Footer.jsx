@@ -32,7 +32,7 @@ export default function Footer() {
             <h3 className="text-gray-800 text-lg font-bold mb-4">Liên kết nhanh</h3>
             <ul className="space-y-3">
               <li><Link to="/" className="hover:text-emerald-600 transition-colors">Trang chủ</Link></li>
-              <li><Link to="/menu" className="hover:text-emerald-600 transition-colors">Sản phẩm</Link></li>
+              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Sản phẩm</Link></li>
               <li><Link to="/wishlist" className="hover:text-emerald-600 transition-colors">Yêu thích</Link></li>
               <li><Link to="/" className="hover:text-emerald-600 transition-colors">Về chúng tôi</Link></li>
             </ul>
@@ -41,10 +41,10 @@ export default function Footer() {
           <div className="bg-white rounded-3xl p-6 shadow-sm">
             <h3 className="text-gray-800 text-lg font-bold mb-4">Danh mục</h3>
             <ul className="space-y-3">
-              <li><Link to="/menu" className="hover:text-emerald-600 transition-colors">Đồ dùng nhà bếp</Link></li>
-              <li><Link to="/menu" className="hover:text-emerald-600 transition-colors">Điện gia dụng</Link></li>
-              <li><Link to="/menu" className="hover:text-emerald-600 transition-colors">Dụng cụ dọn dẹp</Link></li>
-              <li><Link to="/menu" className="hover:text-emerald-600 transition-colors">Đồ dùng phòng tắm</Link></li>
+              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Đồ dùng nhà bếp</Link></li>
+              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Điện gia dụng</Link></li>
+              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Dụng cụ dọn dẹp</Link></li>
+              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Đồ dùng phòng tắm</Link></li>
             </ul>
           </div>
 

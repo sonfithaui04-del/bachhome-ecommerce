@@ -48,8 +48,8 @@ public class GetUserOrdersUseCase {
 
     private OrderItemDto toItemDto(OrderItem item) {
         return OrderItemDto.builder()
-                .menuItemId(item.getMenuItemId())
-                .menuItemName(item.getMenuItemName())
+                .productId(item.getProductId())
+                .productName(item.getProductName())
                 .quantity(item.getQuantity())
                 .price(item.getPrice())
                 .subtotal(item.getSubtotal())

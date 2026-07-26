@@ -27,9 +27,9 @@ FROM (VALUES
 ) AS v(id, user_id, email, total_amount, status, delivery_address, phone_number, customer_name, notes, payment_method, points_used, payment_status, created_at, updated_at)
 WHERE NOT EXISTS (SELECT 1 FROM orders);
 
--- 2) Order items (ids auto-generated). menu_item_id/name/price/image reference the 12 hero products.
-INSERT INTO order_items (order_id, menu_item_id, menu_item_name, quantity, price, subtotal, image_url)
-SELECT v.order_id, v.menu_item_id, v.menu_item_name, v.quantity, v.price, v.subtotal, v.image_url
+-- 2) Order items (ids auto-generated). product_id/name/price/image reference the 12 hero products.
+INSERT INTO order_items (order_id, product_id, product_name, quantity, price, subtotal, image_url)
+SELECT v.order_id, v.product_id, v.product_name, v.quantity, v.price, v.subtotal, v.image_url
 FROM (VALUES
     (1,  1,  'Nồi cơm điện Cuckoo 1.8L',   1, 1890000, 1890000, 'https://loremflickr.com/500/400/rice,cooker?lock=1'),
     (1,  5,  'Ấm siêu tốc Sunhouse 1.8L',  2, 350000,  700000,  'https://loremflickr.com/500/400/electric,kettle?lock=5'),
@@ -59,7 +59,7 @@ FROM (VALUES
     (17, 1,  'Nồi cơm điện Cuckoo 1.8L',   1, 1890000, 1890000, 'https://loremflickr.com/500/400/rice,cooker?lock=1'),
     (17, 4,  'Máy xay sinh tố Philips',    1, 890000,  890000,  'https://loremflickr.com/500/400/blender?lock=4'),
     (17, 8,  'Cây lau nhà xoay 360 độ',    1, 250000,  250000,  'https://loremflickr.com/500/400/mop,cleaning?lock=8')
-) AS v(order_id, menu_item_id, menu_item_name, quantity, price, subtotal, image_url)
+) AS v(order_id, product_id, product_name, quantity, price, subtotal, image_url)
 WHERE NOT EXISTS (SELECT 1 FROM order_items);
 
 -- 3) Recompute order totals from items (subtract points discount = points_used * 1000, floor at 0).

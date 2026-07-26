@@ -53,7 +53,7 @@ jobs:
       # Build Service Menu
       - name: Build Service Menu
         run: |
-          cd service-menu
+          cd service-product
           mvn clean package -DskipTests
 
       # Build Service Order
@@ -145,9 +145,9 @@ jobs:
       - name: Build and push Service Menu
         uses: docker/build-push-action@v5
         with:
-          context: ./service-menu
+          context: ./service-product
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/service-menu:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}/service-product:latest
 
       - name: Build and push Service Order
         uses: docker/build-push-action@v5

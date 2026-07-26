@@ -33,13 +33,13 @@ export default function Hero() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Link 
-                to="/menu" 
+                to="/products" 
                 className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-full font-bold text-lg shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 Mua ngay <ArrowRight size={20} />
               </Link>
               <Link 
-                to="/menu" 
+                to="/products" 
                 className="w-full sm:w-auto px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-full font-bold text-lg hover:bg-gray-50 hover:border-emerald-200 transition-all duration-300 flex items-center justify-center gap-2"
               >
                 Xem sản phẩm

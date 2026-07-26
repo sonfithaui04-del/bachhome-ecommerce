@@ -87,35 +87,35 @@ services:
     networks:
       - bachhome-network
 
-  # Menu Service
-  postgres-menu:
+  # Product Service
+  postgres-product:
     image: postgres:15-alpine
-    container_name: postgres-menu
+    container_name: postgres-product
     environment:
-      POSTGRES_DB: bachhome_menu
+      POSTGRES_DB: bachhome_product
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 10112004
     ports:
       - "15433:5432"
     volumes:
-      - postgres-menu-data:/var/lib/postgresql/data
+      - postgres-product-data:/var/lib/postgresql/data
     networks:
       - bachhome-network
 
-  service-menu:
+  service-product:
     build:
-      context: ./service-menu
+      context: ./service-product
       dockerfile: Dockerfile
-    container_name: service-menu
+    container_name: service-product
     ports:
       - "8082:8082"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-menu:5432/bachhome_menu
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-product:5432/bachhome_product
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 10112004
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     depends_on:
-      - postgres-menu
+      - postgres-product
       - eureka-server
     networks:
       - bachhome-network
@@ -281,9 +281,26 @@ services:
     networks:
       - bachhome-network
 
+  # AI Service (Chatbot tư vấn sản phẩm)
+  service-ai:
+    build:
+      context: ./service-ai
+      dockerfile: Dockerfile
+    container_name: service-ai
+    ports:
+      - "8087:8087"
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - eureka-server
+    networks:
+      - bachhome-network
+
 volumes:
   postgres-auth-data:
-  postgres-menu-data:
+  postgres-product-data:
   postgres-order-data:
   postgres-payment-data:
   postgres-inventory-data:

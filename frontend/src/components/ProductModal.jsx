@@ -22,7 +22,7 @@ export default function ProductModal({ item, onClose, addToCart }) {
   const fetchReviews = async () => {
     try {
       setLoadingReviews(true);
-      const res = await api.get(`/api/menu/reviews/item/${item.id}`);
+      const res = await api.get(`/api/products/reviews/item/${item.id}`);
       setReviews(res.data || []);
     } catch (err) {
       console.error("Error fetching reviews", err);
@@ -42,9 +42,9 @@ export default function ProductModal({ item, onClose, addToCart }) {
 
     try {
       setSubmitting(true);
-      await api.post('/api/menu/reviews', 
+      await api.post('/api/products/reviews', 
         {
-          menuItemId: item.id,
+          productId: item.id,
           rating,
           comment
         },

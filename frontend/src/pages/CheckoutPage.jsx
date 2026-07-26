@@ -45,7 +45,7 @@ export default function CheckoutPage() {
   }, [qrPaymentInfo, clearCart])
 
   if (cart.length === 0 && !showQRModal && !paymentSuccess) {
-    setTimeout(() => navigate('/menu'), 0)
+    setTimeout(() => navigate('/products'), 0)
     return null
   }
 
@@ -68,8 +68,8 @@ export default function CheckoutPage() {
         email: user?.email,
         customerName: user?.fullName || user?.email || 'Khách hàng',
         items: cart.map(item => ({
-          menuItemId: item.id,
-          menuItemName: item.name,
+          productId: item.id,
+          productName: item.name,
           quantity: item.quantity,
           price: item.price,
           imageUrl: item.imageUrl

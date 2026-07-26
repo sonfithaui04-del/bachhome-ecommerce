@@ -27,10 +27,10 @@ public class OrderItem {
     private Order order;
 
     @Column(nullable = false)
-    private Long menuItemId;
+    private Long productId;
 
     @Column(nullable = false, length = 200)
-    private String menuItemName;
+    private String productName;
 
     @Column(nullable = false)
     private Integer quantity;

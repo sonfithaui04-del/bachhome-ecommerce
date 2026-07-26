@@ -19,7 +19,7 @@ public class OrderConfirmedEvent {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class OrderItemEventDto {
-        private Long menuItemId;
+        private Long productId;
         private Integer quantity;
     }
 }

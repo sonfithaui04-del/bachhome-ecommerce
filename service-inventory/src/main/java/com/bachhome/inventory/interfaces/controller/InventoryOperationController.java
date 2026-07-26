@@ -17,14 +17,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/inventory")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Inventory Operations", description = "API trừ/hoàn nguyên liệu")
+@Tag(name = "Inventory Operations", description = "API trừ/hoàn mặt hàng trong kho")
 public class InventoryOperationController {
     
     private final DeductInventoryUseCase deductInventoryUseCase;
     private final RestoreInventoryUseCase restoreInventoryUseCase;
     
     @PostMapping("/deduct")
-    @Operation(summary = "Trừ nguyên liệu khi confirm đơn hàng")
+    @Operation(summary = "Trừ mặt hàng trong kho khi confirm đơn hàng")
     public ResponseEntity<String> deductInventory(@RequestBody DeductInventoryDto dto) {
         log.info("[INVENTORY-OPERATION] Deduct request for order: {}", dto.getOrderId());
         try {
@@ -37,7 +37,7 @@ public class InventoryOperationController {
     }
     
     @PostMapping("/restore")
-    @Operation(summary = "Hoàn lại nguyên liệu khi cancel đơn hàng")
+    @Operation(summary = "Hoàn lại mặt hàng trong kho khi cancel đơn hàng")
     public ResponseEntity<String> restoreInventory(@RequestBody DeductInventoryDto dto) {
         log.info("[INVENTORY-OPERATION] Restore request for order: {}", dto.getOrderId());
         try {

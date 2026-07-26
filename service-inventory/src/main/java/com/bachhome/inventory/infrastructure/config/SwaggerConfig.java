@@ -13,7 +13,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Inventory Service API")
-                        .description("API quản lý kho nguyên liệu và công thức món ăn")
+                        .description("API quản lý kho mặt hàng trong kho và công thức món ăn")
                         .version("1.0"));
     }
 }

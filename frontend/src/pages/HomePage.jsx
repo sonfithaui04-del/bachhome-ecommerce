@@ -13,7 +13,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchFeatured = async () => {
       try {
-        const res = await axios.get('/api/menu?availableOnly=true')
+        const res = await axios.get('/api/products?availableOnly=true')
         // Get top 4 items
         setFeaturedItems(res.data.slice(0, 4))
       } catch (error) {
@@ -47,7 +47,7 @@ export default function HomePage() {
           {categories.map((cat) => (
             <Link 
               key={cat.id} 
-              to="/menu"
+              to="/products"
               className="group relative overflow-hidden rounded-2xl shadow-lg aspect-[4/5] hover:-translate-y-2 transition-all duration-300"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10"></div>
@@ -73,7 +73,7 @@ export default function HomePage() {
               <span className="text-emerald-500 font-bold tracking-wider uppercase text-sm">Phổ biến</span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Sản phẩm được yêu thích</h2>
             </div>
-            <Link to="/menu" className="hidden md:flex items-center gap-2 text-emerald-500 font-bold hover:text-emerald-600 transition-colors">
+            <Link to="/products" className="hidden md:flex items-center gap-2 text-emerald-500 font-bold hover:text-emerald-600 transition-colors">
               Xem tất cả <ArrowRight size={20} />
             </Link>
           </div>
@@ -134,7 +134,7 @@ export default function HomePage() {
           )}
           
           <div className="mt-12 text-center md:hidden">
-            <Link to="/menu" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-full font-bold shadow-lg shadow-emerald-500/30">
+            <Link to="/products" className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-500 text-white rounded-full font-bold shadow-lg shadow-emerald-500/30">
               Xem tất cả <ArrowRight size={20} />
             </Link>
           </div>

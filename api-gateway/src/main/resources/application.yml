@@ -15,11 +15,11 @@ spring:
           filters:
             - StripPrefix=1
 
-        # Menu Service Routes
-        - id: service-menu
-          uri: lb://SERVICE-MENU
+        # Product Service Routes
+        - id: service-product
+          uri: lb://SERVICE-PRODUCT
           predicates:
-            - Path=/api/menu/**, /api/categories/**
+            - Path=/api/products/**, /api/categories/**
           filters:
             - StripPrefix=1
 
@@ -35,7 +35,7 @@ spring:
         - id: service-inventory
           uri: lb://SERVICE-INVENTORY
           predicates:
-            - Path=/api/inventory/**, /api/ingredients/**, /api/recipes/**
+            - Path=/api/inventory/**, /api/inventory-items/**
           filters:
             - StripPrefix=1
 
@@ -52,6 +52,14 @@ spring:
           uri: lb://SERVICE-NOTIFICATION
           predicates:
             - Path=/api/notifications/**, /api/chat/**
+          filters:
+            - StripPrefix=1
+
+        # AI Service Routes (Chatbot tư vấn sản phẩm)
+        - id: service-ai
+          uri: lb://SERVICE-AI
+          predicates:
+            - Path=/api/ai/**
           filters:
             - StripPrefix=1
 
