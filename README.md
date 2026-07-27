@@ -82,6 +82,8 @@ Ví dụ sản phẩm: Nồi cơm điện, Máy xay sinh tố, Chảo chống d�
 
 ---
 
+> 📘 **Muốn hiểu hệ thống hoạt động ra sao** (kiến trúc, luồng đặt hàng, RabbitMQ, DDD, các điểm yếu đã biết) — đọc [DOC_HIEU_HE_THONG.md](DOC_HIEU_HE_THONG.md).
+
 ## 🚀 Cài đặt & chạy
 
 ### Yêu cầu
