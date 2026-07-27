@@ -32,11 +32,11 @@
 #### Pages (6 files)
 - ✅ `src/pages/LoginPage.jsx` - Admin login
 - ✅ `src/pages/Dashboard.jsx` - Stats & charts
-- ✅ `src/pages/MenuManagement.jsx` - Full CRUD cho sản phẩm
+- ✅ `src/pages/ProductManagement.jsx` - Full CRUD cho sản phẩm
 - ✅ `src/pages/CategoryManagement.jsx` - CRUD danh mục
 - ✅ `src/pages/OrderManagement.jsx` - Quản lý đơn hàng
 - ✅ `src/pages/UserManagement.jsx` - Danh sách người dùng
-- ✅ `src/pages/IngredientManagement.jsx` - Quản lý tồn kho
+- ✅ `src/pages/InventoryManagement.jsx` - Quản lý tồn kho
 
 ---
 
@@ -149,12 +149,12 @@ Using **Recharts** library:
 
 ## 🔌 API ENDPOINTS USED
 
-### Menu Service
+### Product Service
 ```javascript
-GET    /api/menu              // Get all products
-POST   /api/menu              // Create product
-PUT    /api/menu/:id          // Update product
-DELETE /api/menu/:id          // Delete product
+GET    /api/products              // Get all products
+POST   /api/products              // Create product
+PUT    /api/products/:id          // Update product
+DELETE /api/products/:id          // Delete product
 ```
 
 ### Category Service
@@ -189,7 +189,7 @@ frontend-admin/
 │   │   └── AuthContext.jsx         # Admin authentication
 │   ├── pages/
 │   │   ├── Dashboard.jsx           # Stats & charts ⭐
-│   │   ├── MenuManagement.jsx      # CRUD menu items ⭐
+│   │   ├── ProductManagement.jsx      # CRUD products ⭐
 │   │   ├── CategoryManagement.jsx  # CRUD categories ⭐
 │   │   ├── OrderManagement.jsx     # Manage orders ⭐
 │   │   ├── UserManagement.jsx      # View users
@@ -215,7 +215,7 @@ frontend-admin/
 - [x] Bar chart for weekly orders
 - [x] Line chart for revenue
 - [x] Recent orders table
-- [x] Full CRUD for menu items
+- [x] Full CRUD for products
 - [x] Full CRUD for categories
 - [x] Order list with filtering
 - [x] Order status updates
@@ -289,7 +289,7 @@ npm run dev
 You now have a **COMPLETE ADMIN PANEL** with:
 
 ✅ **Premium UI/UX** - Modern, professional design  
-✅ **Full CRUD Operations** - Menu & Categories  
+✅ **Full CRUD Operations** - Products & Categories  
 ✅ **Order Management** - Complete workflow  
 ✅ **Analytics Dashboard** - Charts & statistics  
 ✅ **Responsive Design** - Works everywhere  

@@ -36,7 +36,7 @@ Bach/
 ├── eureka-server/          ✅ Service Discovery
 ├── api-gateway/            ✅ API Gateway
 ├── service-auth/           ✅ Authentication Service
-├── service-menu/           🔨 (Coming soon)
+├── service-product/           🔨 (Coming soon)
 ├── service-order/          🔨 (Coming soon)
 ├── docker-compose.yml      ✅ Docker configuration
 ├── README.md               📖 Documentation
@@ -196,7 +196,7 @@ Tại đây bạn có thể:
 **Connection Info:**
 ```
 Host: localhost
-Port: 5432 (auth), 5433 (menu), 5434 (order)
+Port: 5432 (auth), 5433 (product), 5434 (order)
 Username: postgres
 Password: postgres
 Database: food_ordering_auth
@@ -292,8 +292,8 @@ Sau khi hệ thống chạy thành công:
 
 1. ✅ Đọc [PROJECT_RULES_AND_STANDARDS.md](PROJECT_RULES_AND_STANDARDS.md) để hiểu quy tắc code
 2. ✅ Xem [todolist.md](todolist.md) để biết roadmap
-3. ✅ Tạo branch mới: `git checkout -b feature/menu/your-feature`
-4. ✅ Bắt đầu develop service tiếp theo (Menu, Order, etc.)
+3. ✅ Tạo branch mới: `git checkout -b feature/product/your-feature`
+4. ✅ Bắt đầu develop service tiếp theo (Product, Order, etc.)
 
 ---
 

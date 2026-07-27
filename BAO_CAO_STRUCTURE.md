@@ -67,7 +67,7 @@
 | 4.2 | Kubernetes Pod và Service | 15 |
 | 6.1 | Context Mapping Diagram | 24 |
 | 6.2 | ERD - Auth Service | 26 |
-| 6.3 | ERD - Menu Service | 27 |
+| 6.3 | ERD - Product Service | 27 |
 | 6.4 | ERD - Order Service | 28 |
 | 7.1 | System Architecture Diagram | 31 |
 | 7.2 | Sequence Diagram - Đặt hàng | 35 |
@@ -273,8 +273,8 @@ DDD ra đời để giải quyết vấn đề phần mềm ngày càng phức t
 
 **Ví dụ trong hệ thống BachHome:**
 - `Order` - Đơn hàng
-- `MenuItem` - Sản phẩm trong danh mục
-- `Ingredient` - Mặt hàng tồn kho
+- `Product` - Sản phẩm trong danh mục
+- `InventoryItem` - Mặt hàng tồn kho
 - `Confirmed`, `Preparing`, `Delivered` - Trạng thái đơn hàng
 
 ### 2.2.2 Bounded Context
@@ -285,10 +285,10 @@ DDD ra đời để giải quyết vấn đề phần mềm ngày càng phức t
 ┌─────────────────────────────────────────────────────────────┐
 │                       BACHHOME SYSTEM                       │
 ├────────────┬────────────┬────────────┬────────────┬─────────┤
-│   Auth     │   Menu     │   Order    │  Payment   │Inventory│
+│   Auth     │  Product   │   Order    │  Payment   │Inventory│
 │  Context   │  Context   │  Context   │  Context   │ Context │
 ├────────────┼────────────┼────────────┼────────────┼─────────┤
-│ • User     │ • MenuItem │ • Order    │ • Payment  │• Ingredi│
+│ • User     │ • Product  │ • Order    │ • Payment  │• InvItem│
 │ • Role     │ • Category │ • OrderItem│ • Transact │• Import │
 │ • Login    │ • Variant  │ • Status   │ • Method   │• Stock  │
 └────────────┴────────────┴────────────┴────────────┴─────────┘
@@ -480,10 +480,10 @@ spring:
           uri: lb://service-auth
           predicates:
             - Path=/api/auth/**
-        - id: service-menu
-          uri: lb://service-menu
+        - id: service-product
+          uri: lb://service-product
           predicates:
-            - Path=/api/menu/**
+            - Path=/api/products/**
         - id: service-order
           uri: lb://service-order
           predicates:
@@ -559,7 +559,7 @@ Ghi log tất cả requests/responses để:
 │     │           Service Registry                    │    │
 │     │  ┌──────────────────────────────────────┐   │    │
 │     │  │ service-auth: 192.168.1.10:8081     │   │    │
-│     │  │ service-menu: 192.168.1.11:8082     │   │    │
+│     │  │ service-product: 192.168.1.11:8082     │   │    │
 │     │  │ service-order: 192.168.1.12:8083    │   │    │
 │     │  └──────────────────────────────────────┘   │    │
 │     └──────────────────────────────────────────────┘    │
@@ -791,7 +791,7 @@ Xây dựng **Website bán đồ gia dụng BachHome** với kiến trúc Micros
 | STT | Module | Chức năng |
 |-----|--------|-----------|
 | 1 | **Auth** | Đăng ký, đăng nhập, JWT authentication |
-| 2 | **Menu** | CRUD danh mục, sản phẩm, variants |
+| 2 | **Product** | CRUD danh mục, sản phẩm, variants |
 | 3 | **Order** | Tạo đơn, cập nhật trạng thái, xem lịch sử |
 | 4 | **Payment** | Xử lý thanh toán, ghi nhận transaction |
 | 5 | **Inventory** | Quản lý tồn kho, nhập kho, trừ kho |
@@ -828,7 +828,7 @@ Hệ thống được chia thành **6 Bounded Contexts**, mỗi context tương 
 | Context | Service | Trách nhiệm |
 |---------|---------|-------------|
 | Auth | service-auth | Quản lý users, authentication |
-| Menu | service-menu | Quản lý menu, categories |
+| Product | service-product | Quản lý sản phẩm, danh mục |
 | Order | service-order | Quản lý đơn hàng |
 | Payment | service-payment | Xử lý thanh toán |
 | Inventory | service-inventory | Quản lý kho, tồn kho |
@@ -846,7 +846,7 @@ Hệ thống được chia thành **6 Bounded Contexts**, mỗi context tương 
          │                 │                 │
          ▼                 ▼                 ▼
    ┌───────────┐    ┌───────────┐    ┌───────────┐
-   │   Menu    │    │   Order   │◄───│  Payment  │
+   │  Product  │    │   Order   │◄───│  Payment  │
    │  Context  │    │  Context  │    │  Context  │
    └─────┬─────┘    └─────┬─────┘    └───────────┘
          │                │
@@ -881,11 +881,11 @@ public class User {
 }
 ```
 
-### 6.3.2 Menu Domain
+### 6.3.2 Product Domain
 
 ```java
 @Entity
-public class MenuItem {
+public class Product {
     @Id @GeneratedValue
     private Long id;
     private String name;
@@ -898,7 +898,7 @@ public class MenuItem {
     private Category category;
     
     @OneToMany
-    private List<MenuItemVariant> variants;
+    private List<ProductVariant> variants;
 }
 ```
 
@@ -1004,7 +1004,7 @@ service-order/src/main/java/com/foodordering/order/
    ┌─────┴────────────┴────────────┴─────┐
    │          MICROSERVICES               │
    │  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────────┐│
-   │  │Auth │ │Menu │ │Order│ │ Payment ││
+   │  │Auth │ │Prod │ │Order│ │ Payment ││
    │  │:8081│ │:8082│ │:8083│ │  :8084  ││
    │  └─────┘ └─────┘ └─────┘ └─────────┘│
    │  ┌───────────┐ ┌─────────────────┐  │
@@ -1021,7 +1021,7 @@ service-order/src/main/java/com/foodordering/order/
 | eureka-server | 8761 | - | Service Discovery |
 | api-gateway | 8080 | - | Routing, CORS |
 | service-auth | 8081 | postgres-auth:5432 | Authentication |
-| service-menu | 8082 | postgres-menu:5433 | Menu management |
+| service-product | 8082 | postgres-product:5433 | Product management |
 | service-order | 8083 | postgres-order:5434 | Order management |
 | service-payment | 8084 | postgres-payment:5435 | Payment processing |
 | service-inventory | 8085 | postgres-inventory:5436 | Stock management |
@@ -1041,10 +1041,10 @@ spring:
           filters:
             - StripPrefix=1
             
-        - id: service-menu
-          uri: lb://service-menu
+        - id: service-product
+          uri: lb://service-product
           predicates:
-            - Path=/api/menu/**, /api/categories/**
+            - Path=/api/products/**, /api/categories/**
           filters:
             - StripPrefix=1
             
@@ -1117,7 +1117,7 @@ bachhome/
 ├── eureka-server/          # Service Discovery
 ├── api-gateway/            # API Gateway
 ├── service-auth/           # Auth Microservice
-├── service-menu/           # Menu Microservice
+├── service-product/           # Product Microservice
 ├── service-order/          # Order Microservice
 ├── service-payment/        # Payment Microservice
 ├── service-inventory/      # Inventory Microservice
@@ -1246,7 +1246,7 @@ jobs:
       - name: Build All Services
         run: |
           cd service-auth && mvn clean package -DskipTests
-          cd ../service-menu && mvn clean package -DskipTests
+          cd ../service-product && mvn clean package -DskipTests
           cd ../service-order && mvn clean package -DskipTests
           
       - name: Build Docker Images
@@ -1317,7 +1317,7 @@ jobs:
 |--------|----------|---------|-------|
 | POST | /api/auth/register | Auth | Đăng ký user |
 | POST | /api/auth/login | Auth | Đăng nhập |
-| GET | /api/menu | Menu | Lấy danh sách món |
+| GET | /api/products | Product | Lấy danh sách sản phẩm |
 | POST | /api/orders | Order | Tạo đơn hàng |
 | PATCH | /api/orders/{id}/status | Order | Cập nhật trạng thái |
 | POST | /api/payments | Payment | Thanh toán |

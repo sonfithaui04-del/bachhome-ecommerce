@@ -2,12 +2,12 @@
 
 Tính năng AI: chatbot tư vấn đồ gia dụng, dùng **Google Gemini** (gói miễn phí).
 Kiến trúc: `service-ai` (Spring Boot, port 8087) đăng ký Eureka, gọi Gemini + lấy sản phẩm
-từ `service-menu`. Frontend có widget chat nổi ở góc phải.
+từ `service-product`. Frontend có widget chat nổi ở góc phải.
 
 ```
 Frontend (widget) ──POST /api/ai/chat──► API Gateway (8080) ──lb──► service-ai (8087)
                                                                      │  lấy sản phẩm
-                                                                     ▼  từ service-menu
+                                                                     ▼  từ service-product
                                                                   gọi Gemini API
 ```
 
@@ -49,8 +49,26 @@ Mở http://localhost:3000 → góc phải dưới có nút chat 💬 → bấm 
 
 ## Ghi chú
 - Chưa cấu hình key → chatbot vẫn chạy nhưng trả lời "chưa cấu hình khóa API".
-- Đổi model: sửa `GEMINI_MODEL` trong `docker-compose.yml` (mặc định `gemini-1.5-flash`).
-- Chatbot chỉ tư vấn sản phẩm đang bán (lấy từ service-menu) — chống bịa sản phẩm.
+- Đổi model: sửa `GEMINI_MODEL` trong `.env` (mặc định `gemini-3.5-flash-lite`).
+- Chatbot chỉ tư vấn sản phẩm đang bán (lấy từ service-product) — chống bịa sản phẩm.
+
+## Xử lý sự cố: chatbot trả lời "Xin lỗi, trợ lý đang bận"
+Đây là câu fallback khi gọi Gemini lỗi. Xem nguyên nhân thật trong log:
+```bash
+docker compose logs --tail 50 service-ai
+```
+Hay gặp nhất là **HTTP 429 — hết quota gói miễn phí**. Quota tính **theo từng model**,
+nên chỉ cần đổi `GEMINI_MODEL` sang model khác là có hạn mức mới:
+
+| Model | Ghi chú (kiểm tra 26/07/2026) |
+|-------|-------------------------------|
+| `gemini-3.5-flash-lite` | Mặc định, hạn mức rộng |
+| `gemini-3.1-flash-lite` | Dự phòng |
+| `gemini-3.6-flash` | Mạnh hơn, hạn mức hẹp hơn |
+| `gemini-2.5-flash` | Chỉ 20 request/ngày |
+| `gemini-2.0-flash*`, `gemini-2.5-flash-lite` | Đã bị khoá với tài khoản mới |
+
+Đổi xong chạy `docker compose up -d service-ai` (không cần build lại).
 - File liên quan:
   - `service-ai/` — toàn bộ service backend.
   - `api-gateway/src/main/resources/application.yml` — route `/api/ai/**`.

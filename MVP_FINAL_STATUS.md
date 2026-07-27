@@ -18,11 +18,11 @@
 - **API:** POST /auth/register, POST /auth/login
 - Swagger: http://localhost:8081/swagger-ui.html
 
-#### ✅ Service-Menu (Port 8082)
+#### ✅ Service-Product (Port 8082)
 **Status:** COMPLETE & TESTED  
-- Domain: MenuItem, Category
+- Domain: Product, Category
 - Features: CRUD Sản phẩm & Danh mục
-- **API:** GET/POST /menu, GET/POST /categories
+- **API:** GET/POST /products, GET/POST /categories
 - Swagger: http://localhost:8082/swagger-ui.html
 
 #### ✅ Service-Order (Port 8083)
@@ -132,7 +132,7 @@ Given token constraints (~90k remaining), recommend:
 - Enough to demonstrate microservices architecture
 
 ### Option C: Full Implementation (Ideal but time-consuming)
-- Full DDD structure like Auth/Menu/Order
+- Full DDD structure like Auth/Product/Order
 - All use cases, DTOs
 - Would require ~40-50 more files
 - May hit token limit
@@ -156,7 +156,7 @@ Given token constraints (~90k remaining), recommend:
 |---------|---------------|--------|
 | Infrastructure | ~20 | ✅ Complete |
 | Service-Auth | ~25 | ✅ Complete |
-| Service-Menu | ~25 | ✅ Complete |
+| Service-Product | ~25 | ✅ Complete |
 | Service-Order | ~18 | ✅ Complete |
 | Service-Payment | 7 | ✅ Created, not deployed |
 | Service-Inventory | 0 | ⏳ Pending |

@@ -18,6 +18,7 @@ Ví dụ sản phẩm: Nồi cơm điện, Máy xay sinh tố, Chảo chống d�
 - **Đặt hàng** và theo dõi trạng thái đơn (cập nhật realtime qua WebSocket)
 - **Thanh toán COD hoặc chuyển khoản QR** (tích hợp SePay)
 - **Đánh giá** sản phẩm đã mua
+- **Trợ lý AI** (Google Gemini) tư vấn và gợi ý sản phẩm phù hợp, trả kèm ảnh và giá
 
 ### Quản trị (Admin Panel)
 - **Tổng quan** — dashboard thống kê doanh thu, đơn hàng, sản phẩm
@@ -51,8 +52,8 @@ Ví dụ sản phẩm: Nồi cơm điện, Máy xay sinh tố, Chảo chống d�
                      ▲
    ┌─────────────────┴────────────────────────────────────────┐
    │                    MICROSERVICES                          │
-   │  Auth  Menu  Order  Payment  Inventory  Notify  Socket    │
-   │  8081  8082  8083    8084      8085       8086    8089     │
+   │  Auth Product Order Payment Inventory Notify  AI  Socket  │
+   │  8081  8082   8083   8084     8085    8086  8087  8089    │
    └───────────────────────────────────────────────────────────┘
 ```
 
@@ -63,11 +64,12 @@ Ví dụ sản phẩm: Nồi cơm điện, Máy xay sinh tố, Chảo chống d�
 | eureka-server | 8761 | Service Discovery |
 | api-gateway | 8080 | API Gateway & Routing |
 | service-auth | 8081 | Xác thực & phân quyền (JWT) |
-| service-menu | 8082 | Sản phẩm & danh mục |
+| service-product | 8082 | Sản phẩm & danh mục |
 | service-order | 8083 | Đơn hàng & giỏ hàng |
 | service-payment | 8084 | Thanh toán (COD / QR SePay) |
 | service-inventory | 8085 | Tồn kho |
 | service-notification | 8086 | Thông báo |
+| service-ai | 8087 | Chatbot AI tư vấn sản phẩm (Google Gemini) |
 | service-socket | 8089 | Cập nhật realtime (WebSocket) |
 
 ---
@@ -90,10 +92,18 @@ Ví dụ sản phẩm: Nồi cơm điện, Máy xay sinh tố, Chảo chống d�
 ### 1. Clone dự án
 ```bash
 git clone <URL-repo>
-cd Bach
+cd bachhome-ecommerce
 ```
 
-### 2. Chạy backend bằng Docker Compose
+### 2. Tạo file `.env` (bắt buộc nếu muốn dùng chatbot AI)
+File `.env` nằm trong `.gitignore` nên **không có sẵn khi clone**. Tạo ở thư mục gốc (cùng chỗ `docker-compose.yml`):
+```
+GEMINI_API_KEY=<khóa Gemini của bạn>
+GEMINI_MODEL=gemini-3.5-flash-lite
+```
+Lấy khóa miễn phí tại https://aistudio.google.com/apikey. Bỏ qua bước này thì mọi thứ vẫn chạy, riêng chatbot trả lời *"Chatbot chưa được cấu hình khóa API"*. Chi tiết xem [CHATBOT-AI-README.md](CHATBOT-AI-README.md).
+
+### 3. Chạy backend bằng Docker Compose
 ```bash
 # Tại thư mục gốc dự án
 docker compose up -d --build
@@ -102,7 +112,7 @@ Lệnh này build và khởi động Eureka, API Gateway, toàn bộ microservic
 
 > 💡 **Dữ liệu mẫu tự nạp:** Khi backend khởi động lần đầu trên database rỗng, hệ thống tự động nạp dữ liệu mẫu — **112 sản phẩm** (5 danh mục), **17 đơn hàng** kèm chi tiết, và **tồn kho** — thông qua cơ chế `data.sql` của Spring Boot. Không cần chạy seed thủ công. Cơ chế nạp là *idempotent*: các lần khởi động sau sẽ bỏ qua nếu dữ liệu đã tồn tại (chạy `docker compose down -v` nếu muốn reset và nạp lại).
 
-### 3. Chạy Customer App
+### 4. Chạy Customer App
 ```bash
 cd frontend
 npm install
@@ -110,7 +120,7 @@ npm run dev
 ```
 Truy cập tại **http://localhost:3000**
 
-### 4. Chạy Admin Panel
+### 5. Chạy Admin Panel
 ```bash
 cd frontend-admin
 npm install
@@ -139,15 +149,16 @@ Truy cập tại **http://localhost:3002**
 ## 📁 Cấu trúc thư mục
 
 ```
-Bach/
+bachhome-ecommerce/
 ├── eureka-server/          # Service Discovery
 ├── api-gateway/            # API Gateway
 ├── service-auth/           # Xác thực & phân quyền
-├── service-menu/           # Sản phẩm & danh mục
+├── service-product/        # Sản phẩm & danh mục
 ├── service-order/          # Đơn hàng & giỏ hàng
 ├── service-payment/        # Thanh toán
 ├── service-inventory/      # Tồn kho
 ├── service-notification/   # Thông báo
+├── service-ai/             # Chatbot AI (Google Gemini)
 ├── service-socket/         # Realtime (WebSocket)
 ├── frontend/               # Customer App (React + Vite)
 ├── frontend-admin/         # Admin Panel (React + Vite)

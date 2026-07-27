@@ -145,18 +145,18 @@ sequenceDiagram
 
 ---
 
-## 3. UC_XemMenu: Xem danh sách sản phẩm
+## 3. UC_XemSanPham: Xem danh sách sản phẩm
 
 ### Bảng mô tả chi tiết
 
 | Thuộc tính | Chi tiết |
 | :--- | :--- |
-| **Mã Use case** | `UC_XemMenu` |
+| **Mã Use case** | `UC_XemSanPham` |
 | **Tên Use case** | Xem và tìm kiếm sản phẩm |
 | **Tác nhân** | Khách hàng, Khách vãng lai |
 | **Mô tả** | Cho phép người dùng xem danh sách sản phẩm, lọc theo danh mục hoặc tìm kiếm theo tên. |
 | **Sự kiện kích hoạt** | Người dùng truy cập trang chủ hoặc trang sản phẩm. |
-| **Tiền điều kiện** | Hệ thống Menu Service đang hoạt động. |
+| **Tiền điều kiện** | Hệ thống Product Service đang hoạt động. |
 | **Hậu điều kiện** | Danh sách sản phẩm được hiển thị. |
 
 #### Luồng sự kiện chính
@@ -165,7 +165,7 @@ sequenceDiagram
 |---|---|---|
 | 1 | Người dùng | Truy cập vào màn hình "Sản phẩm". |
 | 2 | Hệ thống | Gửi yêu cầu lấy danh sách danh mục (Categories) và sản phẩm (Products). |
-| 3 | Hệ thống | Truy vấn dữ liệu từ Menu Database. |
+| 3 | Hệ thống | Truy vấn dữ liệu từ Product Database. |
 | 4 | Hệ thống | Trả về danh sách sản phẩm, hình ảnh, giá. |
 | 5 | Người dùng | Xem danh sách, có thể chọn bộ lọc Category hoặc gõ từ khóa tìm kiếm. |
 | 6 | Hệ thống | Cập nhật danh sách hiển thị theo điều kiện lọc/tìm kiếm. |
@@ -178,32 +178,32 @@ sequenceDiagram
     actor U as Khách hàng
     participant FE as Frontend
     participant GW as API Gateway
-    participant Menu as Menu Service
-    participant DB as Menu DB
+    participant Product as Product Service
+    participant DB as Product DB
 
     U->>FE: Truy cập trang Sản phẩm
     par Get Categories
         FE->>GW: GET /api/categories
-        GW->>Menu: Forward
-        Menu->>DB: Find All Categories
-        DB-->>Menu: List Categories
-        Menu-->>FE: JSON Categories
+        GW->>Product: Forward
+        Product->>DB: Find All Categories
+        DB-->>Product: List Categories
+        Product-->>FE: JSON Categories
     and Get Products
-        FE->>GW: GET /api/menu?page=0&size=10
-        GW->>Menu: Forward
-        Menu->>DB: Find Products (Pagination)
-        DB-->>Menu: List Products
-        Menu-->>FE: JSON Products
+        FE->>GW: GET /api/products?page=0&size=10
+        GW->>Product: Forward
+        Product->>DB: Find Products (Pagination)
+        DB-->>Product: List Products
+        Product-->>FE: JSON Products
     end
     FE-->>U: Hiển thị giao diện Grid sản phẩm
     
     opt Tìm kiếm
         U->>FE: Nhập từ khóa "Quạt điện"
-        FE->>GW: GET /api/menu/search?q=Quạt điện
-        GW->>Menu: Search Request
-        Menu->>DB: Query LIKE %Quạt điện%
-        DB-->>Menu: Result List
-        Menu-->>FE: Updated List
+        FE->>GW: GET /api/products/search?q=Quạt điện
+        GW->>Product: Search Request
+        Product->>DB: Query LIKE %Quạt điện%
+        DB-->>Product: Result List
+        Product-->>FE: Updated List
         FE-->>U: Cập nhật giao diện
     end
 ```

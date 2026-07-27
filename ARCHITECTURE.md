@@ -37,7 +37,7 @@
         │                 │                 │
         ▼                 ▼                 ▼
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│    Auth      │  │    Menu      │  │    Order     │
+│    Auth      │  │   Product    │  │    Order     │
 │  Service     │  │   Service    │  │   Service    │
 │  (8081)      │  │   (8082)     │  │   (8083)     │
 ├──────────────┤  ├──────────────┤  ├──────────────┤
@@ -116,7 +116,7 @@
 
 3. **Inventory Updated Flow:**
    ```
-   Inventory Service → inventory.updated → [Menu, Order]
+   Inventory Service → inventory.updated → [Product, Order]
    ```
 
 ## 🗂️ DDD Layer Architecture (Per Service)
@@ -232,10 +232,10 @@ users
 └── updated_at
 ```
 
-### Menu Service Database (Planned)
+### Product Service Database (Planned)
 
 ```
-categories                  menu_items
+categories                  products
 ├── id (PK)                ├── id (PK)
 ├── name                   ├── category_id (FK)
 ├── description            ├── name
@@ -252,7 +252,7 @@ categories                  menu_items
 orders                      order_items
 ├── id (PK)                ├── id (PK)
 ├── user_id                ├── order_id (FK)
-├── total_amount           ├── menu_item_id
+├── total_amount           ├── product_id
 ├── status                 ├── quantity
 ├── created_at             ├── price
 └── updated_at             └── subtotal

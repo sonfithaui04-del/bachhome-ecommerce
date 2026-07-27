@@ -18,7 +18,7 @@ pie title Cơ cấu thành phần hệ thống
 
 | Tiêu chí | Số lượng | Chi tiết |
 |----------|----------|----------|
-| **Microservices** | 7 | Auth, Menu, Order, Payment, Inventory, Notification, Gateway |
+| **Microservices** | 7 | Auth, Product, Order, Payment, Inventory, Notification, Gateway |
 | **Databases** | 6 | PostgreSQL instances (Mỗi service một DB riêng biệt) |
 | **Docker Containers** | 15+ | Bao gồm các services, databases và message broker |
 | **Kubernetes Pods** | 19 | Đảm bảo tính sẵn sàng cao (High Availability) |

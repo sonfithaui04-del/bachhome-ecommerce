@@ -10,7 +10,7 @@ Tài liệu này được biên soạn chi tiết để giải thích toàn bộ
 Chịu trách nhiệm toàn bộ các tính năng cốt lõi và kỹ thuật phức tạp của hệ thống:
 - **Core Backend**:
   - **Authentication**: Đăng ký, Đăng nhập, Bảo mật (JWT), phân quyền User/Admin.
-  - **Order & Menu Services**: Xử lý logic đặt hàng, quản lý sản phẩm, tồn kho.
+  - **Order & Product Services**: Xử lý logic đặt hàng, quản lý sản phẩm, tồn kho.
 - **Advanced Integrations (Nâng cao)**:
   - **Thanh toán Online (SePay)**: Tích hợp cổng thanh toán, xử lý Webhook, bảo mật giao dịch.
   - **Event-Driven Architecture**: Cấu hình **RabbitMQ** để xử lý giao tiếp bất đồng bộ giữa các services (Payment -> Order -> Inventory).
@@ -34,7 +34,7 @@ Chịu trách nhiệm các tính năng bổ trợ và giao diện người dùng
 Hệ thống sử dụng kiến trúc **Microservices**. Thay vì một "cục" code khổng lồ (Monolith), chúng ta chia nhỏ thành các services chạy riêng biệt.
 
 ```
-Frontend (React) ◄──HTTP──► API Gateway (8080) ◄──HTTP──► Services (Auth, Menu, Order...)
+Frontend (React) ◄──HTTP──► API Gateway (8080) ◄──HTTP──► Services (Auth, Product, Order...)
                                                                   ▲
                                                                   │ (Async Messaging)
                                                                   ▼
@@ -42,7 +42,7 @@ Frontend (React) ◄──HTTP──► API Gateway (8080) ◄──HTTP──�
 ```
 
 **Tại sao lại dùng kiến trúc này?**
-- **Dễ chia việc**: Nhật làm Auth/Menu không ảnh hưởng code Payment của Lập.
+- **Dễ chia việc**: Nhật làm Auth/Product không ảnh hưởng code Payment của Lập.
 - **Dễ mở rộng**: Nếu tính năng Payment quá tải, chỉ cần chạy thêm service Payment mà không cần chạy lại cả hệ thống.
 - **Khả năng chịu lỗi**: Nếu service Notification chết, người dùng vẫn đặt hàng được (chỉ là không thấy thông báo ngay thôi).
 
@@ -75,7 +75,7 @@ public boolean validateToken(String token)
 // - Logic: Giải mã token bằng Secret Key. Nếu giải được và chưa hết hạn -> True.
 ```
 
-### 📦 1.2 Luồng Order & Menu (Core Business)
+### 📦 1.2 Luồng Order & Product (Core Business)
 **Luồng đi:** `Frontend` -> `API Gateway` -> `Service-Order` -> `RabbitMQ`
 
 **Kiến thức cần nắm (Lý thuyết):**

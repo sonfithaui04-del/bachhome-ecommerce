@@ -18,7 +18,7 @@
 
 ✅ **Microservices (6/6):**
 1. Service-Auth (8081) - JWT Authentication
-2. Service-Menu (8082) - Product Management
+2. Service-Product (8082) - Product Management
 3. Service-Order (8083) - Order Processing
 4. Service-Payment (8084) - Payment Handling
 5. Service-Inventory (8085) - Stock Management

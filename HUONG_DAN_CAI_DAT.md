@@ -60,8 +60,8 @@ Khi chạy trên máy mới, Database sẽ trống trơn. Bạn cần nạp dữ
 Chạy các lệnh sau trong PowerShell (hoặc Terminal):
 
 ```powershell
-# 1. Nạp Service Menu (Danh mục, Sản phẩm)
-cat "SQL_Backup/menu_service.sql" | docker exec -i postgres-menu psql -U postgres -d food_ordering_menu
+# 1. Nạp Product Service (Danh mục, Sản phẩm)
+cat "SQL_Backup/product_service.sql" | docker exec -i postgres-product psql -U postgres -d bachhome_product
 
 # 2. Nạp Service Auth (Tài khoản users)
 cat "SQL_Backup/auth_service.sql" | docker exec -i postgres-auth psql -U postgres -d food_ordering_auth
@@ -146,7 +146,7 @@ Nếu bạn cần demo Kubernetes trên máy mới:
 
 3.  **Frontend không load được sản phẩm**:
     *   Kiểm tra API Gateway (localhost:8080) có chạy không.
-    *   Kiểm tra Service Menu có chạy không (check Eureka).
+    *   Kiểm tra Product Service có chạy không (check Eureka).
     *   Inspect Element (F12) -> Network xem API trả về lỗi gì.
 
 4.  **Docker báo lỗi bộ nhớ (OOM)**:

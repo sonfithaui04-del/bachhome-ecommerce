@@ -44,8 +44,8 @@ public class OrderDto {
 // OrderItemDto.java  
 @Data @Builder @NoArgsConstructor @AllArgsConstructor
 public class OrderItemDto {
-    private Long menuItemId;
-    private String menuItemName;
+    private Long productId;
+    private String productName;
     private Integer quantity;
     private BigDecimal price;
     private BigDecimal subtotal;
@@ -64,7 +64,7 @@ public class CreateOrderDto {
 // OrderItemRequest.java
 @Data @Builder @NoArgsConstructor @AllArgsConstructor  
 public class OrderItemRequest {
-    @NotNull private Long menuItemId;
+    @NotNull private Long productId;
     @NotNull @Min(1) private Integer quantity;
 }
 ```
@@ -87,8 +87,8 @@ public class CreateOrderUseCase {
             
         for (OrderItemRequest itemReq : request.getItems()) {
             OrderItem item = OrderItem.builder()
-                .menuItemId(itemReq.getMenuItemId())
-                .menuItemName("Item " + itemReq.getMenuItemId()) // TODO: fetch from menu service
+                .productId(itemReq.getProductId())
+                .productName("Item " + itemReq.getProductId()) // TODO: fetch from product service
                 .quantity(itemReq.getQuantity())
                 .price(BigDecimal.valueOf(50000)) // TODO: fetch real price
                 .build();

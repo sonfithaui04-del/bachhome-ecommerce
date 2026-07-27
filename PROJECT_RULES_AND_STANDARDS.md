@@ -71,7 +71,7 @@ docs(global): update DDD architecture diagram
  ├── api-gateway/
  ├── eureka-server/
  ├── service-auth/
- ├── service-menu/
+ ├── service-product/
  ├── service-order/
  ├── service-inventory/
  ├── service-payment/

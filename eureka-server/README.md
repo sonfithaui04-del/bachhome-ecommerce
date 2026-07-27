@@ -49,7 +49,7 @@ Truy cập Eureka Dashboard tại: http://localhost:8761
 Dự kiến các services sau sẽ đăng ký:
 - api-gateway
 - service-auth
-- service-menu
+- service-product
 - service-order
 - service-inventory
 - service-payment

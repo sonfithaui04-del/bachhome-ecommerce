@@ -93,7 +93,7 @@ import Footer from './components/Footer'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
-import MenuPage from './pages/MenuPage'
+import ProductPage from './pages/ProductPage'
 import CartPage from './pages/CartPage'
 import CheckoutPage from './pages/CheckoutPage'
 import MyOrdersPage from './pages/MyOrdersPage'
@@ -107,7 +107,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/menu" element={<MenuPage />} />
+          <Route path="/products" element={<ProductPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/my-orders" element={<MyOrdersPage />} />
@@ -180,15 +180,15 @@ export const authService = {
 }
 ```
 
-#### □ `src/services/menuService.js`
+#### □ `src/services/productService.js`
 ```javascript
 import axios from 'axios'
 
 const API_URL = '/api'
 
-export const menuService = {
-  async getMenu() {
-    const response = await axios.get(`${API_URL}/menu?availableOnly=true`)
+export const productService = {
+  async getProducts() {
+    const response = await axios.get(`${API_URL}/products?availableOnly=true`)
     return response.data
   },
 
@@ -369,7 +369,7 @@ export default function Navbar() {
           </Link>
           
           <div className="flex gap-6 items-center">
-            <Link to="/menu" className="hover:text-blue-600">Sản phẩm</Link>
+            <Link to="/products" className="hover:text-blue-600">Sản phẩm</Link>
             
             {user ? (
               <>
@@ -433,8 +433,8 @@ export default function Footer() {
 - Registration form
 - Validation
 
-#### □ `src/pages/MenuPage.jsx`
-- Display products from Menu Service
+#### □ `src/pages/ProductPage.jsx`
+- Display products from Product Service
 - Add to cart functionality
 
 #### □ `src/pages/CartPage.jsx`
@@ -485,7 +485,7 @@ npm run dev
 2. Services (API integration)
 3. Context (State management)
 4. Components (Navbar, Footer)
-5. Pages (starting with HomePage, LoginPage, MenuPage)
+5. Pages (starting with HomePage, LoginPage, ProductPage)
 
 ---
 
@@ -496,7 +496,7 @@ npm run dev
 - [ ] `npm run dev` starts app on port 3000
 - [ ] Can register user via Auth Service
 - [ ] Can login and see JWT token stored
-- [ ] Can browse products from Menu Service
+- [ ] Can browse products from Product Service
 - [ ] Can add items to cart
 - [ ] Can create order via Order Service
 - [ ] Can view order history
@@ -507,7 +507,7 @@ npm run dev
 ## 🔗 Backend APIs Available
 
 - **Auth:** http://localhost:8080/api/auth/*
-- **Menu:** http://localhost:8080/api/menu & /categories
+- **Sản phẩm:** http://localhost:8080/api/products & /categories
 - **Orders:** http://localhost:8080/api/orders/*
 - **Payments:** http://localhost:8080/api/payments
 - **Inventory:** http://localhost:8080/api/inventory/*

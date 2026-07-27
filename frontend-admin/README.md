@@ -89,7 +89,7 @@ frontend-admin/
 │   │   └── AuthContext.jsx    # Admin authentication
 │   ├── pages/
 │   │   ├── Dashboard.jsx      # Stats & charts
-│   │   ├── MenuManagement.jsx # CRUD sản phẩm
+│   │   ├── ProductManagement.jsx # CRUD sản phẩm
 │   │   ├── CategoryManagement.jsx
 │   │   ├── OrderManagement.jsx
 │   │   ├── UserManagement.jsx
@@ -120,11 +120,11 @@ frontend-admin/
 
 Connects to backend via API Gateway:
 
-### Menu Endpoints
-- `GET /api/menu` - Get all products
-- `POST /api/menu` - Create product
-- `PUT /api/menu/:id` - Update product
-- `DELETE /api/menu/:id` - Delete product
+### Product Endpoints
+- `GET /api/products` - Get all products
+- `POST /api/products` - Create product
+- `PUT /api/products/:id` - Update product
+- `DELETE /api/products/:id` - Delete product
 
 ### Category Endpoints
 - `GET /api/categories` - Get all categories
@@ -170,7 +170,7 @@ Connects to backend via API Gateway:
 - Weekly revenue chart (line chart)
 - Recent orders table
 
-### Product Management (`/menu`)
+### Product Management (`/products`)
 - Grid view of products
 - Add/Edit modal form
 - Price & availability controls
