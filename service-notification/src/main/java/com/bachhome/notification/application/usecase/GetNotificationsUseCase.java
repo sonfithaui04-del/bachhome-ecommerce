@@ -28,6 +28,7 @@ public class GetNotificationsUseCase {
                 .id(notification.getId())
                 .userId(notification.getUserId())
                 .type(notification.getType())
+                .orderId(notification.getOrderId())
                 .subject(notification.getSubject())
                 .message(notification.getMessage())
                 .sent(notification.getSent())

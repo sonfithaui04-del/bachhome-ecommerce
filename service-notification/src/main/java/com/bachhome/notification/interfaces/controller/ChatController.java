@@ -2,6 +2,8 @@ package com.bachhome.notification.interfaces.controller;
 
 import com.bachhome.notification.domain.ChatMessage;
 import com.bachhome.notification.domain.ChatMessageRepository;
+import com.bachhome.notification.domain.model.Notification;
+import com.bachhome.notification.infrastructure.repository.NotificationRepository;
 import com.bachhome.notification.config.RabbitMQConfig;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,6 +28,7 @@ import java.util.Map;
 public class ChatController {
 
     private final ChatMessageRepository chatMessageRepository;
+    private final NotificationRepository notificationRepository;
     private final RabbitTemplate rabbitTemplate;
 
     @PostMapping("/send")
@@ -50,7 +53,53 @@ public class ChatController {
         rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.CHAT_ROUTING_KEY, event);
         log.info("[CHAT-CONTROLLER] Published chat message event for order {}", saved.getOrderId());
 
+        // Tạo thêm một thông báo cho người nhận, để tin hiện ở chuông thông báo
+        // dù họ đang ở trang nào — và vì lưu DB nên tải lại trang vẫn còn.
+        publishChatNotification(message.getRecipientId(), saved);
+
         return ResponseEntity.ok(saved);
+    }
+
+    /**
+     * Sinh thông báo cho phía đối diện của cuộc hội thoại.
+     * - Có recipientId (admin trả lời khách): lưu Notification + đẩy vào kênh riêng của khách.
+     * - Không có (khách nhắn cho shop): chỉ đẩy vào kênh chung của admin, không lưu
+     *   vì thông báo admin không gắn với một userId cụ thể nào.
+     */
+    private void publishChatNotification(Long recipientId, ChatMessage saved) {
+        String subject = "Tin nhắn mới từ " + saved.getSenderName();
+        String preview = saved.getMessage().length() > 120
+                ? saved.getMessage().substring(0, 120) + "…"
+                : saved.getMessage();
+
+        Map<String, Object> notify = new HashMap<>();
+        notify.put("type", "CHAT_NOTIFICATION");
+        notify.put("orderId", saved.getOrderId());
+        notify.put("subject", subject);
+        notify.put("message", preview);
+        notify.put("senderId", saved.getSenderId());
+        notify.put("senderName", saved.getSenderName());
+        notify.put("createdAt", saved.getTimestamp().toString());
+
+        if (recipientId != null) {
+            Notification notification = notificationRepository.save(Notification.builder()
+                    .userId(recipientId)
+                    .type("CHAT")
+                    .orderId(saved.getOrderId())
+                    .subject(subject)
+                    .message(preview)
+                    .sent(true)
+                    .build());
+
+            notify.put("id", notification.getId());
+            notify.put("userId", recipientId);
+            log.info("[CHAT-CONTROLLER] Saved CHAT notification {} for user {}", notification.getId(), recipientId);
+        } else {
+            notify.put("toAdmin", true);
+            log.info("[CHAT-CONTROLLER] Chat notification for admins, order {}", saved.getOrderId());
+        }
+
+        rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE, RabbitMQConfig.CHAT_ROUTING_KEY, notify);
     }
 
     @GetMapping("/history/{orderId}")

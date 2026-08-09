@@ -56,6 +56,21 @@ public class SocketEventListener {
                     return;
                 }
 
+                // Handle CHAT_NOTIFICATION - đẩy vào chuông thông báo, để người nhận
+                // biết có tin nhắn mới dù đang ở trang nào
+                if ("CHAT_NOTIFICATION".equals(type)) {
+                    if (Boolean.TRUE.equals(map.get("toAdmin"))) {
+                        messagingTemplate.convertAndSend("/topic/admin/notifications", map);
+                        log.info("   -> Relayed CHAT_NOTIFICATION to /topic/admin/notifications");
+                    } else if (map.get("userId") != null) {
+                        Long recipientId = ((Number) map.get("userId")).longValue();
+                        String destination = "/topic/user/" + recipientId;
+                        messagingTemplate.convertAndSend(destination, map);
+                        log.info("   -> Relayed CHAT_NOTIFICATION to {}", destination);
+                    }
+                    return;
+                }
+
                 // Lấy customerName, nếu không có thì dùng email hoặc "Khách hàng"
                 String customerName = (String) map.get("customerName");
                 if (customerName == null || customerName.isEmpty()) {

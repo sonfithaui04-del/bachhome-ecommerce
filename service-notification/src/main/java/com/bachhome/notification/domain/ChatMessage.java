@@ -30,6 +30,13 @@ public class ChatMessage {
     @Column(nullable = false)
     private LocalDateTime timestamp;
 
+    /**
+     * Người nhận tin nhắn này, do phía gửi cung cấp (admin biết đơn hàng thuộc về
+     * khách nào). Chỉ dùng để tạo thông báo, không lưu vào bảng chat_messages.
+     */
+    @Transient
+    private Long recipientId;
+
     @PrePersist
     protected void onCreate() {
         timestamp = LocalDateTime.now();

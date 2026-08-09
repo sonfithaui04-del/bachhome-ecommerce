@@ -73,6 +73,13 @@ export default function Navbar() {
     }
   }, [user])
 
+  // Bấm vào một thông báo có gắn đơn hàng thì mở thẳng khung chat của đơn đó
+  const handleNotificationItemClick = (notif) => {
+    if (!notif?.orderId) return
+    setShowNotifications(false)
+    navigate(`/my-orders?chat=${notif.orderId}`)
+  }
+
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications)
     if (!showNotifications && notifications.length > 0) {
@@ -170,7 +177,11 @@ export default function Navbar() {
                           </div>
                         ) : (
                           notifications.map((notif) => (
-                            <div key={notif.id} className="p-4 border-b border-gray-50 hover:bg-emerald-50 transition-colors">
+                            <div
+                              key={notif.id}
+                              onClick={() => handleNotificationItemClick(notif)}
+                              className={`p-4 border-b border-gray-50 hover:bg-emerald-50 transition-colors ${notif.orderId ? 'cursor-pointer' : ''}`}
+                            >
                               <div className="flex gap-3">
                                 <div className="mt-1">
                                   <div className="w-2 h-2 rounded-full bg-emerald-500"></div>

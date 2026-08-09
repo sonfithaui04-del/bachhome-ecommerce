@@ -39,6 +39,14 @@ export default function MyOrdersPage() {
     setUnreadChat(prev => ({ ...prev, [orderId]: 0 }))
   }
 
+  // Mở sẵn khung chat khi vào từ thông báo: /my-orders?chat=19
+  useEffect(() => {
+    const chatParam = new URLSearchParams(window.location.search).get('chat')
+    if (chatParam) {
+      openChat(Number(chatParam))
+    }
+  }, [])
+
   // Nghe tin nhắn của TẤT CẢ đơn đang hoạt động, không đợi khách mở khung chat.
   // Nhờ vậy shop trả lời lúc khung chat đang đóng thì vẫn có chấm đỏ báo.
   useEffect(() => {

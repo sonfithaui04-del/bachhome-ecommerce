@@ -16,7 +16,11 @@ public class Notification {
     private Long userId;
     
     @Column(nullable = false)
-    private String type; // EMAIL, SMS
+    private String type; // EMAIL, SMS, CHAT
+
+    /** Đơn hàng liên quan (dùng cho thông báo CHAT để bấm vào là mở đúng khung chat). */
+    @Column(name = "order_id")
+    private Long orderId;
     
     @Column(nullable = false, length = 200)
     private String subject;

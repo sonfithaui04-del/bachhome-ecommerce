@@ -12,6 +12,10 @@ import { MessageSquare, Send, RefreshCw, Package } from 'lucide-react'
 export default function ChatSupport() {
   const { getToken, user } = useAuth()
   const [conversations, setConversations] = useState([])
+  // orderId -> userId của khách, để gửi thông báo về đúng người khi admin trả lời.
+  // Admin lấy được từ danh sách đơn nên không cần service-notification gọi chéo
+  // sang service-order.
+  const [orderOwners, setOrderOwners] = useState({})
   const [activeOrderId, setActiveOrderId] = useState(null)
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
@@ -23,8 +27,20 @@ export default function ChatSupport() {
 
   useEffect(() => {
     loadConversations()
+    loadOrderOwners()
     connectSocket()
   }, [])
+
+  const loadOrderOwners = async () => {
+    try {
+      const res = await axios.get('/api/orders', authHeader())
+      const map = {}
+      ;(res.data || []).forEach(o => { map[o.id] = o.userId })
+      setOrderOwners(map)
+    } catch (error) {
+      console.error('Không tải được danh sách đơn để xác định chủ đơn', error)
+    }
+  }
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -80,7 +96,9 @@ export default function ChatSupport() {
         senderId: user?.userId || user?.id,
         senderName: user?.fullName || 'Quản trị viên',
         message: text,
-        type: 'CHAT_MESSAGE'
+        type: 'CHAT_MESSAGE',
+        // Chủ đơn sẽ nhận được thông báo ở chuông
+        recipientId: orderOwners[activeOrderId] ?? null
       }, authHeader())
       setNewMessage('')
       // Tin của chính mình cũng quay về qua WebSocket nên không cần tự thêm
