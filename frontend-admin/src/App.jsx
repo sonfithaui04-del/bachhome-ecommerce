@@ -8,6 +8,7 @@ import CategoryManagement from './pages/CategoryManagement'
 import OrderManagement from './pages/OrderManagement'
 import UserManagement from './pages/UserManagement'
 import InventoryManagement from './pages/InventoryManagement'
+import ChatSupport from './pages/ChatSupport'
 
 function ProtectedRoute({ children }) {
   const { user } = useAuth()
@@ -35,6 +36,7 @@ function App() {
         <Route path="/orders" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
         <Route path="/users" element={<ProtectedRoute><UserManagement /></ProtectedRoute>} />
         <Route path="/inventoryItems" element={<ProtectedRoute><InventoryManagement /></ProtectedRoute>} />
+        <Route path="/support" element={<ProtectedRoute><ChatSupport /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Layout>

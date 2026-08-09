@@ -10,7 +10,8 @@ import {
   LogOut,
   Home,
   Menu,
-  Bell
+  Bell,
+  MessageSquare
 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 import { Toaster, toast } from 'react-hot-toast'
@@ -100,6 +101,7 @@ export default function Layout({ children }) {
     { path: '/products', icon: Package, label: 'Sản phẩm' },
     { path: '/categories', icon: FolderOpen, label: 'Danh mục' },
     { path: '/inventoryItems', icon: Boxes, label: 'Tồn kho' },
+    { path: '/support', icon: MessageSquare, label: 'Hỗ trợ' },
     { path: '/users', icon: Users, label: 'Người dùng' }
   ]
 

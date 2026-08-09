@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,5 +59,37 @@ public class ChatController {
         log.info("[CHAT-CONTROLLER] Fetching chat history for order {}", orderId);
         List<ChatMessage> history = chatMessageRepository.findByOrderIdOrderByTimestampAsc(orderId);
         return ResponseEntity.ok(history);
+    }
+
+    /**
+     * Danh sách hội thoại cho trang hỗ trợ của admin: mỗi đơn hàng một dòng,
+     * kèm tin nhắn cuối cùng. Sắp xếp đơn có tin mới nhất lên đầu.
+     */
+    @GetMapping("/conversations")
+    @Operation(summary = "Danh sách hội thoại theo đơn hàng (Admin)")
+    public ResponseEntity<List<Map<String, Object>>> getConversations() {
+        List<ChatMessage> all = chatMessageRepository.findAllByOrderByTimestampDesc();
+
+        // LinkedHashMap giữ nguyên thứ tự duyệt (mới nhất trước), và vì danh sách
+        // đã sắp giảm dần nên tin đầu tiên gặp của mỗi đơn chính là tin mới nhất.
+        Map<Long, Map<String, Object>> byOrder = new LinkedHashMap<>();
+
+        for (ChatMessage m : all) {
+            Map<String, Object> conv = byOrder.get(m.getOrderId());
+            if (conv == null) {
+                conv = new HashMap<>();
+                conv.put("orderId", m.getOrderId());
+                conv.put("lastMessage", m.getMessage());
+                conv.put("lastSenderId", m.getSenderId());
+                conv.put("lastSenderName", m.getSenderName());
+                conv.put("lastTimestamp", m.getTimestamp().toString());
+                conv.put("total", 0);
+                byOrder.put(m.getOrderId(), conv);
+            }
+            conv.put("total", ((Integer) conv.get("total")) + 1);
+        }
+
+        log.info("[CHAT-CONTROLLER] Found {} conversations", byOrder.size());
+        return ResponseEntity.ok(new ArrayList<>(byOrder.values()));
     }
 }
