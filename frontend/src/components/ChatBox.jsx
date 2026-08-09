@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Send, User, MessageCircle, X, Minus } from 'lucide-react'
-import { connectSocket } from '../services/socketService'
+import { connectSocket, subscribeOrderChat, unsubscribeOrderChat } from '../services/socketService'
 import api from '../services/apiClient'
 import toast from 'react-hot-toast'
 
@@ -23,21 +23,22 @@ export default function ChatBox({ orderId, currentUser, senderName, onClose }) {
   }
 
   useEffect(() => {
-    if (isOpen) {
-      fetchHistory()
-      const stompClient = connectSocket((event) => {
-        if (event.type === 'CHAT_MESSAGE' && event.orderId === orderId) {
-          setMessages(prev => [...prev, event])
-          if (event.senderId !== currentUser.userId) {
-             // Play sound or show small toast if minimized
-          }
-        }
-      }, currentUser.userId || currentUser.id)
+    if (!isOpen || !orderId) return
 
-      return () => {
-        // cleanup if needed
-      }
-    }
+    fetchHistory()
+
+    // Đảm bảo socket đã mở (không truyền callback để khỏi ghi đè handler
+    // thông báo mà Navbar đã đăng ký).
+    connectSocket(null, currentUser.userId || currentUser.id)
+
+    // Lắng nghe đúng kênh chat của đơn hàng này
+    subscribeOrderChat(orderId, (event) => {
+      setMessages(prev =>
+        prev.some(m => m.id && m.id === event.id) ? prev : [...prev, event]
+      )
+    })
+
+    return () => unsubscribeOrderChat(orderId)
   }, [isOpen, orderId])
 
   useEffect(() => {

@@ -29,6 +29,16 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(socketQueue).to(exchange).with("order.status.changed");
     }
 
+    /**
+     * Tin nhắn hỗ trợ theo đơn hàng. service-notification publish với routing key
+     * "chat.message"; thiếu binding này thì message không khớp queue nào và bị
+     * topic exchange loại bỏ, nên chat không bao giờ hiện realtime.
+     */
+    @Bean
+    public Binding bindingChatMessage(Queue socketQueue, TopicExchange exchange) {
+        return BindingBuilder.bind(socketQueue).to(exchange).with("chat.message");
+    }
+
     @Bean
     public org.springframework.amqp.support.converter.MessageConverter converter() {
         return new org.springframework.amqp.support.converter.Jackson2JsonMessageConverter();
