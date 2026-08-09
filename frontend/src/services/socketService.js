@@ -10,9 +10,12 @@ let connected = false;
 let notificationCallback = null;
 let currentUserId = null;
 
-// orderId -> callback xử lý tin nhắn chat của đơn đó
+// orderId -> tập các callback quan tâm tới đơn đó.
+// Dùng Set vì nhiều nơi cùng nghe một đơn: trang Đơn hàng nghe để đếm tin chưa
+// đọc, còn ChatBox nghe để hiển thị. Nếu chỉ giữ một callback thì cái sau sẽ
+// ghi đè cái trước.
 const chatHandlers = new Map();
-// orderId -> subscription STOMP (để huỷ khi đóng khung chat)
+// orderId -> subscription STOMP (chỉ huỷ khi không còn ai nghe)
 const chatSubs = new Map();
 
 /** Kênh thông báo riêng của người dùng (trạng thái đơn, thanh toán...). */
@@ -39,9 +42,9 @@ const subscribeChatTopic = (orderId) => {
     const sub = stompClient.subscribe(`/topic/orders/${orderId}/chat`, (msg) => {
         try {
             const payload = JSON.parse(msg.body);
-            const handler = chatHandlers.get(orderId);
-            if (handler) {
-                handler(payload);
+            const handlers = chatHandlers.get(orderId);
+            if (handlers) {
+                handlers.forEach(fn => fn(payload));
             }
         } catch (e) {
             console.error('Error parsing chat message:', e);
@@ -84,31 +87,55 @@ export const connectSocket = (onMessageReceived, userId = null) => {
     return stompClient;
 };
 
-/** Lắng nghe tin nhắn hỗ trợ của một đơn hàng. Tự kết nối nếu socket chưa mở. */
+/**
+ * Lắng nghe tin nhắn hỗ trợ của một đơn hàng. Tự kết nối nếu socket chưa mở.
+ * Trả về hàm huỷ đăng ký của riêng callback này.
+ */
 export const subscribeOrderChat = (orderId, onChatMessage) => {
-    if (!orderId) return;
+    if (!orderId || !onChatMessage) return () => {};
     const key = String(orderId);
-    chatHandlers.set(key, onChatMessage);
+
+    if (!chatHandlers.has(key)) {
+        chatHandlers.set(key, new Set());
+    }
+    chatHandlers.get(key).add(onChatMessage);
 
     if (!stompClient) {
         connectSocket(notificationCallback, currentUserId);
     } else {
         subscribeChatTopic(key);
     }
+
+    return () => unsubscribeOrderChat(key, onChatMessage);
 };
 
-export const unsubscribeOrderChat = (orderId) => {
+/**
+ * Bỏ một callback khỏi đơn hàng. Chỉ huỷ subscription STOMP khi không còn ai
+ * nghe đơn đó nữa. Không truyền handler thì gỡ toàn bộ.
+ */
+export const unsubscribeOrderChat = (orderId, handler) => {
     if (!orderId) return;
     const key = String(orderId);
-    chatHandlers.delete(key);
-    const sub = chatSubs.get(key);
-    if (sub) {
-        try {
-            sub.unsubscribe();
-        } catch (e) {
-            // socket có thể đã đóng, bỏ qua
+    const handlers = chatHandlers.get(key);
+    if (!handlers) return;
+
+    if (handler) {
+        handlers.delete(handler);
+    } else {
+        handlers.clear();
+    }
+
+    if (handlers.size === 0) {
+        chatHandlers.delete(key);
+        const sub = chatSubs.get(key);
+        if (sub) {
+            try {
+                sub.unsubscribe();
+            } catch (e) {
+                // socket có thể đã đóng, bỏ qua
+            }
+            chatSubs.delete(key);
         }
-        chatSubs.delete(key);
     }
 };
 

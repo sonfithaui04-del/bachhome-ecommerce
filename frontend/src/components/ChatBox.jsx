@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Send, User, MessageCircle, X, Minus } from 'lucide-react'
-import { connectSocket, subscribeOrderChat, unsubscribeOrderChat } from '../services/socketService'
+import { connectSocket, subscribeOrderChat } from '../services/socketService'
 import api from '../services/apiClient'
 import toast from 'react-hot-toast'
 
@@ -32,13 +32,15 @@ export default function ChatBox({ orderId, currentUser, senderName, onClose }) {
     connectSocket(null, currentUser.userId || currentUser.id)
 
     // Lắng nghe đúng kênh chat của đơn hàng này
-    subscribeOrderChat(orderId, (event) => {
+    const unsubscribe = subscribeOrderChat(orderId, (event) => {
       setMessages(prev =>
         prev.some(m => m.id && m.id === event.id) ? prev : [...prev, event]
       )
     })
 
-    return () => unsubscribeOrderChat(orderId)
+    // Chỉ gỡ callback của riêng khung chat này, không đụng tới các nơi khác
+    // đang nghe cùng đơn (ví dụ bộ đếm tin chưa đọc ở trang Đơn hàng).
+    return unsubscribe
   }, [isOpen, orderId])
 
   useEffect(() => {

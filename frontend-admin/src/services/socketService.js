@@ -9,9 +9,9 @@ let stompClient = null;
 let connected = false;
 let notificationCallback = null;
 
-// orderId -> callback xử lý tin nhắn chat của đơn đó
+// orderId -> tập các callback quan tâm tới đơn đó (nhiều nơi có thể cùng nghe)
 const chatHandlers = new Map();
-// orderId -> subscription STOMP (để huỷ khi rời khỏi hội thoại)
+// orderId -> subscription STOMP (chỉ huỷ khi không còn ai nghe)
 const chatSubs = new Map();
 
 /** Kênh thông báo chung của admin (đơn mới, thanh toán...). */
@@ -37,9 +37,9 @@ const subscribeChatTopic = (orderId) => {
     const sub = stompClient.subscribe(`/topic/orders/${orderId}/chat`, (msg) => {
         try {
             const payload = JSON.parse(msg.body);
-            const handler = chatHandlers.get(orderId);
-            if (handler) {
-                handler(payload);
+            const handlers = chatHandlers.get(orderId);
+            if (handlers) {
+                handlers.forEach(fn => fn(payload));
             }
         } catch (e) {
             console.error('Error parsing chat message:', e);
@@ -83,29 +83,46 @@ export const connectSocket = (onMessageReceived) => {
 
 /** Lắng nghe tin nhắn của một đơn hàng. Tự kết nối nếu socket chưa mở. */
 export const subscribeOrderChat = (orderId, onChatMessage) => {
-    if (!orderId) return;
+    if (!orderId || !onChatMessage) return () => {};
     const key = String(orderId);
-    chatHandlers.set(key, onChatMessage);
+
+    if (!chatHandlers.has(key)) {
+        chatHandlers.set(key, new Set());
+    }
+    chatHandlers.get(key).add(onChatMessage);
 
     if (!stompClient) {
         connectSocket(notificationCallback);
     } else {
         subscribeChatTopic(key);
     }
+
+    return () => unsubscribeOrderChat(key, onChatMessage);
 };
 
-export const unsubscribeOrderChat = (orderId) => {
+export const unsubscribeOrderChat = (orderId, handler) => {
     if (!orderId) return;
     const key = String(orderId);
-    chatHandlers.delete(key);
-    const sub = chatSubs.get(key);
-    if (sub) {
-        try {
-            sub.unsubscribe();
-        } catch (e) {
-            // socket có thể đã đóng, bỏ qua
+    const handlers = chatHandlers.get(key);
+    if (!handlers) return;
+
+    if (handler) {
+        handlers.delete(handler);
+    } else {
+        handlers.clear();
+    }
+
+    if (handlers.size === 0) {
+        chatHandlers.delete(key);
+        const sub = chatSubs.get(key);
+        if (sub) {
+            try {
+                sub.unsubscribe();
+            } catch (e) {
+                // socket có thể đã đóng, bỏ qua
+            }
+            chatSubs.delete(key);
         }
-        chatSubs.delete(key);
     }
 };
 
