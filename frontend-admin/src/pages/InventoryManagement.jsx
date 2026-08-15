@@ -10,6 +10,7 @@ import {
 export default function InventoryManagement() {
   const { getToken } = useAuth()
   const [inventoryItems, setInventoryItems] = useState([])
+  const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingInventoryItem, setEditingInventoryItem] = useState(null)
@@ -17,6 +18,7 @@ export default function InventoryManagement() {
   
   const [formData, setFormData] = useState({
     name: '',
+    productId: '',
     unit: '',
     quantity: '',
     minQuantity: '',
@@ -28,7 +30,23 @@ export default function InventoryManagement() {
 
   useEffect(() => {
     loadInventoryItems()
+    loadProducts()
   }, [])
+
+  // Danh sách sản phẩm đang bán, dùng để gắn mặt hàng kho với sản phẩm
+  const loadProducts = async () => {
+    try {
+      const token = getToken()
+      const response = await axios.get('/api/products', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      const data = response.data
+      setProducts(Array.isArray(data) ? data : (data?.content || []))
+    } catch (error) {
+      console.error('Failed to load products:', error)
+      setProducts([])
+    }
+  }
 
   const loadInventoryItems = async () => {
     try {
@@ -53,6 +71,7 @@ export default function InventoryManagement() {
       const token = getToken()
       const payload = {
         ...formData,
+        productId: formData.productId ? parseInt(formData.productId, 10) : null,
         quantity: parseFloat(formData.quantity),
         minQuantity: formData.minQuantity ? parseFloat(formData.minQuantity) : null,
         costPerUnit: formData.costPerUnit ? parseFloat(formData.costPerUnit) : null,
@@ -96,6 +115,7 @@ export default function InventoryManagement() {
     setEditingInventoryItem(inventoryItem)
     setFormData({
       name: inventoryItem.name,
+      productId: inventoryItem.productId ?? '',
       unit: inventoryItem.unit,
       quantity: inventoryItem.quantity,
       minQuantity: inventoryItem.minQuantity || '',
@@ -112,6 +132,7 @@ export default function InventoryManagement() {
     setEditingInventoryItem(null)
     setFormData({
       name: '',
+      productId: '',
       unit: '',
       quantity: '',
       minQuantity: '',
@@ -138,7 +159,7 @@ export default function InventoryManagement() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-12 h-12 text-emerald-500 animate-spin" />
+        <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
       </div>
     )
   }
@@ -149,11 +170,11 @@ export default function InventoryManagement() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Quản lý tồn kho</h1>
-          <p className="text-gray-500">Theo dõi số lượng, chi phí và mức tồn kho sản phẩm</p>
+          <p className="text-gray-500">Theo dõi kho, chi phí và mức tồn kho</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
         >
           <Plus size={20} />
           Thêm mặt hàng
@@ -169,7 +190,7 @@ export default function InventoryManagement() {
             placeholder="Tìm kiếm mặt hàng..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           />
         </div>
       </div>
@@ -181,6 +202,7 @@ export default function InventoryManagement() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tên hàng</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sản phẩm gắn kèm</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tồn kho</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Đơn giá</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
@@ -192,7 +214,7 @@ export default function InventoryManagement() {
                 <tr key={inventoryItem.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mr-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-3">
                         <Package size={16} />
                       </div>
                       <div>
@@ -200,6 +222,15 @@ export default function InventoryManagement() {
                         <div className="text-xs text-gray-500">{inventoryItem.unit}</div>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {inventoryItem.productId ? (
+                      <span className="px-2 py-1 inline-flex text-xs font-medium rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+                        {products.find(p => p.id === inventoryItem.productId)?.name || `#${inventoryItem.productId}`}
+                      </span>
+                    ) : (
+                      <span className="text-xs text-gray-400">Vật tư kho</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex flex-col">
@@ -277,9 +308,27 @@ export default function InventoryManagement() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     placeholder="Ví dụ: Nồi cơm điện Cuckoo 1.8L"
                   />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sản phẩm tương ứng</label>
+                  <select
+                    name="productId"
+                    value={formData.productId}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 bg-white"
+                  >
+                    <option value="">— Không gắn (vật tư kho) —</option>
+                    {products.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Gắn với sản phẩm để hệ thống tự trừ kho khi xác nhận đơn và hoàn kho khi hủy đơn.
+                  </p>
                 </div>
 
                 <div>
@@ -292,8 +341,8 @@ export default function InventoryManagement() {
                       value={formData.unit}
                       onChange={handleChange}
                       required
-                      className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
-                      placeholder="cái, bộ, chiếc..."
+                      className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
+                      placeholder="cái, chiếc, bộ..."
                     />
                   </div>
                 </div>
@@ -307,7 +356,7 @@ export default function InventoryManagement() {
                     value={formData.quantity}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                     placeholder="0.00"
                   />
                 </div>
@@ -322,7 +371,7 @@ export default function InventoryManagement() {
                       name="minQuantity"
                       value={formData.minQuantity}
                       onChange={handleChange}
-                      className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       placeholder="Ngưỡng cảnh báo"
                     />
                   </div>
@@ -338,7 +387,7 @@ export default function InventoryManagement() {
                       name="costPerUnit"
                       value={formData.costPerUnit}
                       onChange={handleChange}
-                      className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                      className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                       placeholder="0.00"
                     />
                   </div>
@@ -351,7 +400,7 @@ export default function InventoryManagement() {
                     value={formData.description}
                     onChange={handleChange}
                     rows="3"
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 resize-none"
+                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none"
                     placeholder="Thông tin thêm..."
                   />
                 </div>
@@ -364,7 +413,7 @@ export default function InventoryManagement() {
                   id="active"
                   checked={formData.active}
                   onChange={handleChange}
-                  className="w-5 h-5 text-emerald-600 rounded focus:ring-emerald-500 border-gray-300"
+                  className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300"
                 />
                 <label htmlFor="active" className="ml-2 block text-sm font-medium text-gray-700 cursor-pointer select-none">
                   Kích hoạt
@@ -381,7 +430,7 @@ export default function InventoryManagement() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium shadow-sm"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium shadow-sm"
                 >
                   {editingInventoryItem ? 'Cập nhật' : 'Thêm mới'}
                 </button>
