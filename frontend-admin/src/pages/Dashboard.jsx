@@ -11,13 +11,14 @@ const STATUS_META = {
   PENDING:    { label: 'Chờ xác nhận', color: '#F59E0B' },
   CONFIRMED:  { label: 'Đã xác nhận', color: '#3B82F6' },
   PREPARING:  { label: 'Đang chuẩn bị', color: '#8B5CF6' },
+  READY:      { label: 'Sẵn sàng giao', color: '#0D9488' },
   DELIVERING: { label: 'Đang giao', color: '#14B8A6' },
   COMPLETED:  { label: 'Hoàn thành', color: '#22C55E' },
   DELIVERED:  { label: 'Đã giao', color: '#22C55E' },
   CANCELLED:  { label: 'Đã huỷ', color: '#EF4444' },
 }
 const REVENUE_STATUSES = ['COMPLETED', 'DELIVERED']
-const PENDING_STATUSES = ['PENDING', 'CONFIRMED', 'PREPARING', 'DELIVERING']
+const PENDING_STATUSES = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY', 'DELIVERING']
 
 const fmtMoney = (v) => `${(v || 0).toLocaleString('vi-VN')}đ`
 

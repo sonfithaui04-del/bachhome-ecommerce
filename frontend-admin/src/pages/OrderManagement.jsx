@@ -53,6 +53,24 @@ export default function OrderManagement() {
     }
   }
 
+  // Đối soát thủ công: xác nhận đã nhận được tiền chuyển khoản của đơn SePay
+  const verifyPayment = async (orderId) => {
+    if (!window.confirm('Xác nhận đã nhận được tiền chuyển khoản của đơn hàng #' + orderId + '?')) return
+    const token = getToken()
+    try {
+      const res = await axios.post(`/api/payments/${orderId}/verify`, {},
+        { headers: { Authorization: `Bearer ${token}` }}
+      )
+      alert(res.data?.message || 'Đã xác nhận thanh toán')
+      loadOrders()
+      setSelectedOrder(null)
+    } catch (error) {
+      console.error('Verify payment error:', error)
+      const errorMsg = error.response?.data?.message || error.response?.data || error.message
+      alert('Không thể xác nhận thanh toán: ' + errorMsg)
+    }
+  }
+
   const updateOrderStatus = async (orderId, newStatus) => {
     const token = getToken()
     try {
@@ -74,6 +92,7 @@ export default function OrderManagement() {
       PENDING: { color: 'text-yellow-600 bg-yellow-50 border-yellow-200', icon: Clock, label: 'Chờ xác nhận' },
       CONFIRMED: { color: 'text-blue-600 bg-blue-50 border-blue-200', icon: CheckCircle, label: 'Đã xác nhận' },
       PREPARING: { color: 'text-purple-600 bg-purple-50 border-purple-200', icon: Package, label: 'Đang chuẩn bị' },
+      READY: { color: 'text-teal-600 bg-teal-50 border-teal-200', icon: Package, label: 'Sẵn sàng giao' },
       DELIVERING: { color: 'text-emerald-600 bg-emerald-50 border-emerald-200', icon: Truck, label: 'Đang giao hàng' },
       COMPLETED: { color: 'text-green-600 bg-green-50 border-green-200', icon: Package, label: 'Hoàn thành' },
       CANCELLED: { color: 'text-red-600 bg-red-50 border-red-200', icon: X, label: 'Đã hủy' }
@@ -131,6 +150,7 @@ export default function OrderManagement() {
             { id: 'PENDING', label: 'Chờ xác nhận' },
             { id: 'CONFIRMED', label: 'Đã xác nhận' },
             { id: 'PREPARING', label: 'Đang chuẩn bị' },
+            { id: 'READY', label: 'Sẵn sàng giao' },
             { id: 'DELIVERING', label: 'Đang giao' },
             { id: 'COMPLETED', label: 'Hoàn thành' },
             { id: 'CANCELLED', label: 'Đã hủy' }
@@ -360,6 +380,12 @@ export default function OrderManagement() {
                     <p className="text-sm text-yellow-800 flex items-center gap-2">
                       ⚠️ <strong>Đơn chuyển khoản chưa thanh toán.</strong> Chỉ có thể chuyển sang "Đang chuẩn bị" sau khi khách thanh toán.
                     </p>
+                    <button
+                      onClick={() => verifyPayment(selectedOrder.id)}
+                      className="mt-3 w-full py-2 rounded-lg bg-yellow-600 hover:bg-yellow-700 text-white text-sm font-semibold transition-colors"
+                    >
+                      ✓ Xác nhận đã nhận tiền
+                    </button>
                   </div>
                 )}
                 
@@ -367,9 +393,10 @@ export default function OrderManagement() {
                   {[
                     { status: 'CONFIRMED', label: 'Xác nhận đơn', color: 'bg-blue-600 hover:bg-blue-700', allowedFrom: ['PENDING'], requiresPayment: false },
                     { status: 'PREPARING', label: 'Chuẩn bị hàng', color: 'bg-purple-600 hover:bg-purple-700', allowedFrom: ['CONFIRMED'], requiresPayment: true },
-                    { status: 'DELIVERING', label: 'Giao hàng', color: 'bg-emerald-600 hover:bg-emerald-700', allowedFrom: ['PREPARING'], requiresPayment: true },
+                    { status: 'READY', label: 'Sẵn sàng giao', color: 'bg-teal-600 hover:bg-teal-700', allowedFrom: ['PREPARING'], requiresPayment: true },
+                    { status: 'DELIVERING', label: 'Giao hàng', color: 'bg-emerald-600 hover:bg-emerald-700', allowedFrom: ['PREPARING', 'READY'], requiresPayment: true },
                     { status: 'COMPLETED', label: 'Hoàn thành', color: 'bg-green-600 hover:bg-green-700', allowedFrom: ['DELIVERING'], requiresPayment: true },
-                    { status: 'CANCELLED', label: 'Hủy đơn', color: 'bg-red-600 hover:bg-red-700', allowedFrom: ['PENDING', 'CONFIRMED', 'PREPARING'], requiresPayment: false }
+                    { status: 'CANCELLED', label: 'Hủy đơn', color: 'bg-red-600 hover:bg-red-700', allowedFrom: ['PENDING', 'CONFIRMED', 'PREPARING', 'READY'], requiresPayment: false }
                   ].map((action) => {
                     const isAllowed = action.allowedFrom.includes(selectedOrder.status);
                     const isCurrent = selectedOrder.status === action.status;
