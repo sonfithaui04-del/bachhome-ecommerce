@@ -109,10 +109,14 @@ public class OrderController {
                 event
             );
             
-        } else if (oldStatus == OrderStatus.CONFIRMED && newStatus == OrderStatus.CANCELLED) {
-            // CONFIRMED -> CANCELLED: Hoàn lại tồn kho (TODO: Implement Async Restore)
-            log.info("[ORDER-CONTROLLER] Cancelling confirmed order {} - sending restore event (Not Implemented yet)", orderId);
-            // restoreInventoryForOrder(order); // Commented out for now
+        } else if (newStatus == OrderStatus.CANCELLED && isInventoryDeducted(oldStatus)) {
+            // Huỷ đơn sau khi đã trừ kho (CONFIRMED trở đi) -> hoàn lại tồn kho
+            log.info("[ORDER-CONTROLLER] Cancelling order {} from {} - restoring inventory", orderId, oldStatus);
+            try {
+                restoreInventoryForOrder(order);
+            } catch (Exception e) {
+                log.error("[ORDER-CONTROLLER] Restore inventory failed for order {}: {}", orderId, e.getMessage());
+            }
         }
         
         // COD: Auto-mark as paid when order is completed
@@ -146,6 +150,17 @@ public class OrderController {
         return ResponseEntity.ok(convertToDto(updated));
     }
     
+    /**
+     * Tồn kho bị trừ khi đơn chuyển sang CONFIRMED (qua OrderConfirmedEvent).
+     * Vì vậy huỷ đơn từ CONFIRMED trở đi thì phải hoàn kho, còn huỷ khi PENDING thì không.
+     */
+    private boolean isInventoryDeducted(OrderStatus status) {
+        return status == OrderStatus.CONFIRMED
+                || status == OrderStatus.PREPARING
+                || status == OrderStatus.READY
+                || status == OrderStatus.DELIVERING;
+    }
+
     /**
      * Trừ tồn kho cho đơn hàng
      */
@@ -241,7 +256,17 @@ public class OrderController {
         if (order.getStatus() != OrderStatus.PENDING && order.getStatus() != OrderStatus.CONFIRMED) {
              throw new RuntimeException("Không thể hủy đơn hàng khi đã bắt đầu chuẩn bị hoặc đang giao.");
         }
-        
+
+        // Đã trừ kho từ lúc xác nhận đơn -> hoàn lại tồn kho trước khi huỷ
+        if (isInventoryDeducted(order.getStatus())) {
+            log.info("[ORDER-CONTROLLER] Cancelling order {} from {} - restoring inventory", orderId, order.getStatus());
+            try {
+                restoreInventoryForOrder(order);
+            } catch (Exception e) {
+                log.error("[ORDER-CONTROLLER] Restore inventory failed for order {}: {}", orderId, e.getMessage());
+            }
+        }
+
         order.setStatus(OrderStatus.CANCELLED);
         Order updated = orderRepository.save(order);
         
