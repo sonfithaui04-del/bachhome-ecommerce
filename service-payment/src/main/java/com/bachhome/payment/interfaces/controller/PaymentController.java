@@ -161,7 +161,46 @@ public class PaymentController {
         
         return ResponseEntity.badRequest().body(Map.of("status", "error", "message", "Payment not found"));
     }
-    
+
+    /**
+     * Quản trị viên đối soát và xác nhận đơn chuyển khoản đã nhận được tiền.
+     * Dùng khi webhook của SePay không về (đơn đang PENDING hoặc PENDING_VERIFICATION).
+     */
+    @PostMapping("/{orderId}/verify")
+    public ResponseEntity<Map<String, String>> verifyPaymentByAdmin(@PathVariable Long orderId) {
+        log.info("[PAYMENT] Admin xác nhận thanh toán cho Order {}", orderId);
+
+        Optional<Payment> paymentOpt = paymentRepository.findFirstByOrderIdOrderByCreatedAtDesc(orderId);
+        if (paymentOpt.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of(
+                "status", "error",
+                "message", "Không tìm thấy giao dịch thanh toán của đơn hàng " + orderId
+            ));
+        }
+
+        Payment payment = paymentOpt.get();
+        if (payment.getStatus() == PaymentStatus.SUCCESS) {
+            return ResponseEntity.ok(Map.of(
+                "status", "already_success",
+                "message", "Đơn hàng này đã được ghi nhận thanh toán trước đó."
+            ));
+        }
+
+        payment.setStatus(PaymentStatus.SUCCESS);
+        if (payment.getTransactionId() == null || payment.getTransactionId().isBlank()) {
+            payment.setTransactionId("MANUAL-" + orderId);
+        }
+        paymentRepository.save(payment);
+
+        // Báo cho service-order cập nhật paymentStatus giống luồng webhook
+        publishPaymentConfirmedEvent(orderId, payment.getAmount(), payment.getTransactionId());
+
+        return ResponseEntity.ok(Map.of(
+            "status", "success",
+            "message", "Đã xác nhận thanh toán cho đơn hàng " + orderId
+        ));
+    }
+
     /**
      * Publish payment confirmed event to RabbitMQ
      * Order-service sẽ listen và cập nhật paymentStatus
