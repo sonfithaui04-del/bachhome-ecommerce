@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 480" width="600" height="480" role="img">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#f0fdfa"/><stop offset="1" stop-color="#99f6e4"/></linearGradient></defs>
+<rect width="600" height="480" fill="url(#g)"/>
+<circle cx="530" cy="30" r="160" fill="#0d9488" opacity="0.10"/>
+<circle cx="60" cy="450" r="110" fill="#0d9488" opacity="0.10"/>
+<circle cx="300" cy="240" r="165" fill="#ffffff" opacity="0.92"/>
+<g transform="translate(300 240) scale(9.2) translate(-12 -12)" fill="none" stroke="#0d9488"
+   stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h.01"/><path d="M7 5h.01"/><path d="M11 7h.01"/><path d="M3 7h.01"/><path d="M7 9h.01"/><path d="M3 11h.01"/><rect width="4" height="4" x="15" y="5"/><path d="m19 9 2 2v10c0 .6-.4 1-1 1h-6c-.6 0-1-.4-1-1V11l2-2"/><path d="m13 14 8-2"/><path d="m13 19 8-2"/></g>
+<text x="574" y="458" text-anchor="end" font-family="Segoe UI,Arial,sans-serif" font-size="15"
+   font-weight="700" fill="#134e4a" opacity="0.32">BachHome</text>
+</svg>
