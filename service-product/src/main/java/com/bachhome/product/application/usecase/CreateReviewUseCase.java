@@ -6,6 +6,7 @@ import com.bachhome.product.domain.model.Product;
 import com.bachhome.product.domain.model.Review;
 import com.bachhome.product.domain.repository.ProductRepository;
 import com.bachhome.product.domain.repository.ReviewRepository;
+import com.bachhome.product.infrastructure.client.AuthServiceClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ public class CreateReviewUseCase {
 
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
+    private final AuthServiceClient authServiceClient;
 
     @Transactional
     public ReviewDto execute(CreateReviewDto dto, Long userId) {
@@ -25,10 +27,11 @@ public class CreateReviewUseCase {
         Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy sản phẩm với ID: " + dto.getProductId()));
 
-        // 2. Create Review
+        // 2. Create Review - lưu kèm tên người đánh giá lấy từ Auth Service
         Review review = Review.builder()
                 .product(product)
                 .userId(userId)
+                .userName(authServiceClient.getDisplayName(userId))
                 .rating(dto.getRating())
                 .comment(dto.getComment())
                 .build();
@@ -43,6 +46,7 @@ public class CreateReviewUseCase {
                 .id(review.getId())
                 .productId(product.getId())
                 .userId(review.getUserId())
+                .userName(review.getUserName())
                 .rating(review.getRating())
                 .comment(review.getComment())
                 .createdAt(review.getCreatedAt())

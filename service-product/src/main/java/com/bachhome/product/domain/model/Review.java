@@ -30,6 +30,10 @@ public class Review {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
+    /** Tên hiển thị của người đánh giá, lưu lại lúc tạo để không phải gọi Auth Service mỗi lần đọc */
+    @Column(name = "user_name", length = 150)
+    private String userName;
+
     @Column(nullable = false)
     private Integer rating; // 1 to 5
 
