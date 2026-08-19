@@ -24,6 +24,13 @@ public class ProductDto {
     private String imageUrl;
     private Boolean available;
     private Integer displayOrder;
+    private Double averageRating;
+    private Integer totalReviews;
+    private String brand;
+    private String origin;
+    private Integer warrantyMonths;
+    private String material;
+    private String specification;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

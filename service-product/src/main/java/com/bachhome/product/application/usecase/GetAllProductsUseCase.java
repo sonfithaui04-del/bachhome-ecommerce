@@ -43,6 +43,13 @@ public class GetAllProductsUseCase {
                 .imageUrl(item.getImageUrl())
                 .available(item.getAvailable())
                 .displayOrder(item.getDisplayOrder())
+                .averageRating(item.getAverageRating())
+                .totalReviews(item.getTotalReviews())
+                .brand(item.getBrand())
+                .origin(item.getOrigin())
+                .warrantyMonths(item.getWarrantyMonths())
+                .material(item.getMaterial())
+                .specification(item.getSpecification())
                 .createdAt(item.getCreatedAt())
                 .updatedAt(item.getUpdatedAt());
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/apiClient';
-import { X, Star, MessageSquare, Heart } from 'lucide-react';
+import { X, Star, MessageSquare, Heart, ShieldCheck, Package, MapPin, Layers, Tag } from 'lucide-react';
 import { useWishlist } from '../context/WishlistContext';
 
 export default function ProductModal({ item, onClose, addToCart }) {
@@ -69,6 +69,18 @@ export default function ProductModal({ item, onClose, addToCart }) {
 
   if (!item) return null;
 
+  // Bảng thông số, bỏ qua các dòng chưa có dữ liệu
+  const specRows = [
+    { label: 'Mã sản phẩm', value: `BH${String(item.id).padStart(5, '0')}`, icon: Tag },
+    { label: 'Danh mục', value: item.categoryName, icon: Package },
+    { label: 'Thương hiệu', value: item.brand, icon: Star },
+    { label: 'Xuất xứ', value: item.origin, icon: MapPin },
+    { label: 'Chất liệu', value: item.material, icon: Layers },
+    { label: 'Thông số kỹ thuật', value: item.specification, icon: Package },
+    { label: 'Bảo hành', value: item.warrantyMonths ? `${item.warrantyMonths} tháng` : null, icon: ShieldCheck },
+    { label: 'Tình trạng', value: item.available === false ? 'Tạm hết hàng' : 'Còn hàng', icon: ShieldCheck },
+  ].filter(row => row.value);
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="bg-white rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col md:flex-row relative shadow-2xl">
@@ -124,14 +136,30 @@ export default function ProductModal({ item, onClose, addToCart }) {
                   <Heart size={20} className={isWished(item.id) ? 'fill-red-500' : ''} />
                 </button>
                 <button
-                  onClick={() => { addToCart(item); onClose(); }}
+                  onClick={() => { if (addToCart(item)) onClose(); }}
                   className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-full font-bold shadow-lg shadow-emerald-500/30 transition-all active:scale-95"
                 >
                   Thêm vào giỏ
                 </button>
               </div>
             </div>
-            <p className="text-gray-600 leading-relaxed mb-8 border-b pb-8">{item.description}</p>
+            <p className="text-gray-600 leading-relaxed mb-6">{item.description}</p>
+
+            {/* Thông số sản phẩm */}
+            <div className="mb-8 border-b pb-8">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3">Thông số sản phẩm</h3>
+              <dl className="rounded-2xl border border-gray-100 overflow-hidden text-sm">
+                {specRows.map((row, idx) => (
+                  <div key={row.label} className={`flex gap-4 px-4 py-2.5 ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'}`}>
+                    <dt className="w-40 shrink-0 text-gray-500 flex items-center gap-2">
+                      <row.icon size={15} className="text-emerald-500 shrink-0" />
+                      {row.label}
+                    </dt>
+                    <dd className="text-gray-900 font-medium">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
 
             {/* Reviews Section */}
             <div>
@@ -184,14 +212,16 @@ export default function ProductModal({ item, onClose, addToCart }) {
                 ) : reviews.length === 0 ? (
                   <p className="text-center text-gray-400 py-4 bg-gray-50 rounded-xl">Chưa có đánh giá nào. Hãy là người đầu tiên!</p>
                 ) : (
-                  reviews.map(r => (
+                  reviews.map(r => {
+                    const reviewer = r.userName || `Người dùng #${r.userId}`
+                    return (
                     <div key={r.id} className="border-b last:border-0 pb-4 last:pb-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <div className="w-8 h-8 bg-gradient-to-tr from-emerald-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
-                          U
+                        <div className="w-8 h-8 bg-gradient-to-tr from-emerald-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold text-xs uppercase">
+                          {reviewer.trim().charAt(0)}
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-gray-900">User #{r.userId}</p>
+                          <p className="text-sm font-bold text-gray-900">{reviewer}</p>
                           <div className="flex gap-0.5">
                             {[1, 2, 3, 4, 5].map((star) => (
                               <Star key={star} size={12} className={star <= r.rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"} />
@@ -204,7 +234,8 @@ export default function ProductModal({ item, onClose, addToCart }) {
                       </div>
                       <p className="text-gray-600 text-sm pl-10 leading-relaxed">{r.comment}</p>
                     </div>
-                  ))
+                    )
+                  })
                 )}
               </div>
             </div>

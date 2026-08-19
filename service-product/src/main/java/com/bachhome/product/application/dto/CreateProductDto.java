@@ -32,6 +32,16 @@ public class CreateProductDto {
     
     private String imageUrl;
     
+    private String brand;
+    
+    private String origin;
+    
+    private Integer warrantyMonths;
+    
+    private String material;
+    
+    private String specification;
+    
     private Integer displayOrder;
     
     private Boolean available;

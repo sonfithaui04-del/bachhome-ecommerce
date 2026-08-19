@@ -76,6 +76,11 @@ public class ProductController {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setImageUrl(request.getImageUrl());
+        product.setBrand(request.getBrand());
+        product.setOrigin(request.getOrigin());
+        product.setWarrantyMonths(request.getWarrantyMonths());
+        product.setMaterial(request.getMaterial());
+        product.setSpecification(request.getSpecification());
         
         if (request.getCategoryId() != null) {
             Category category = categoryRepository.findById(request.getCategoryId())
@@ -124,6 +129,13 @@ public class ProductController {
         dto.setPrice(product.getPrice());
         dto.setImageUrl(product.getImageUrl());
         dto.setDisplayOrder(product.getDisplayOrder());
+        dto.setAverageRating(product.getAverageRating());
+        dto.setTotalReviews(product.getTotalReviews());
+        dto.setBrand(product.getBrand());
+        dto.setOrigin(product.getOrigin());
+        dto.setWarrantyMonths(product.getWarrantyMonths());
+        dto.setMaterial(product.getMaterial());
+        dto.setSpecification(product.getSpecification());
         if (product.getCategory() != null) {
             dto.setCategoryId(product.getCategory().getId());
             dto.setCategoryName(product.getCategory().getName());

@@ -40,6 +40,24 @@ public class Product {
     @Column(length = 2000)
     private String imageUrl;
 
+    /* ===== Thông số sản phẩm hiển thị ở trang chi tiết ===== */
+
+    @Column(length = 100)
+    private String brand;
+
+    @Column(length = 100)
+    private String origin;
+
+    @Column(name = "warranty_months")
+    private Integer warrantyMonths;
+
+    @Column(length = 200)
+    private String material;
+
+    /** Thông số kỹ thuật rút gọn, VD: "Dung tích 1.8L · Công suất 860W" */
+    @Column(length = 500)
+    private String specification;
+
     @Column(nullable = false)
     private Boolean available;
 
