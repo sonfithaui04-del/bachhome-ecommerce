@@ -7,30 +7,39 @@ import { useCart } from '../context/CartContext'
 
 export default function HomePage() {
   const [featuredItems, setFeaturedItems] = useState([])
+  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const { addToCart } = useCart()
 
   useEffect(() => {
-    const fetchFeatured = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get('/api/products?availableOnly=true')
-        // Get top 4 items
-        setFeaturedItems(res.data.slice(0, 4))
+        const [productRes, catRes] = await Promise.all([
+          axios.get('/api/products?availableOnly=true'),
+          axios.get('/api/categories?activeOnly=true')
+        ])
+        const products = productRes.data || []
+        setFeaturedItems(products.slice(0, 4))
+
+        // Danh mục thật: đếm số sản phẩm và lấy ảnh của sản phẩm đầu tiên làm ảnh bìa
+        const cats = (catRes.data || []).slice(0, 4).map(cat => {
+          const items = products.filter(p => p.categoryId === cat.id)
+          return {
+            id: cat.id,
+            name: cat.name,
+            count: `${items.length} sản phẩm`,
+            image: items[0]?.imageUrl || null
+          }
+        })
+        setCategories(cats)
       } catch (error) {
-        console.error('Failed to fetch menu:', error)
+        console.error('Failed to fetch data:', error)
       } finally {
         setLoading(false)
       }
     }
-    fetchFeatured()
+    fetchData()
   }, [])
-
-  const categories = [
-    { id: 1, name: 'Đồ dùng nhà bếp', image: 'https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=300&q=80', count: '12 Sản phẩm' },
-    { id: 2, name: 'Điện gia dụng', image: 'https://images.unsplash.com/photo-1585659722983-3a675dabf23d?auto=format&fit=crop&w=300&q=80', count: '8 Sản phẩm' },
-    { id: 3, name: 'Dụng cụ dọn dẹp', image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=300&q=80', count: '15 Sản phẩm' },
-    { id: 4, name: 'Đồ dùng phòng tắm', image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=300&q=80', count: '10 Sản phẩm' },
-  ]
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -47,12 +56,12 @@ export default function HomePage() {
           {categories.map((cat) => (
             <Link 
               key={cat.id} 
-              to="/products"
+              to={`/products?category=${cat.id}`}
               className="group relative overflow-hidden rounded-2xl shadow-lg aspect-[4/5] hover:-translate-y-2 transition-all duration-300"
             >
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10"></div>
               <img 
-                src={cat.image} 
+                src={cat.image || 'https://loremflickr.com/500/400/home,appliance?lock=' + cat.id} 
                 alt={cat.name} 
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />

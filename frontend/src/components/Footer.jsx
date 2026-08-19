@@ -1,7 +1,18 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 import { Facebook, Instagram, Twitter, MapPin, Phone, Mail, Home } from 'lucide-react'
 
 export default function Footer() {
+  const [categories, setCategories] = useState([])
+
+  // Lấy danh mục thật để link chân trang lọc đúng loại sản phẩm
+  useEffect(() => {
+    axios.get('/api/categories?activeOnly=true')
+      .then(res => setCategories((res.data || []).slice(0, 5)))
+      .catch(() => setCategories([]))
+  }, [])
+
   return (
     <footer className="bg-emerald-50 text-gray-600">
       <div className="container mx-auto px-4 py-14">
@@ -41,17 +52,18 @@ export default function Footer() {
           <div className="bg-white rounded-3xl p-6 shadow-sm">
             <h3 className="text-gray-800 text-lg font-bold mb-4">Danh mục</h3>
             <ul className="space-y-3">
-              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Đồ dùng nhà bếp</Link></li>
-              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Điện gia dụng</Link></li>
-              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Dụng cụ dọn dẹp</Link></li>
-              <li><Link to="/products" className="hover:text-emerald-600 transition-colors">Đồ dùng phòng tắm</Link></li>
+              {categories.map(cat => (
+                <li key={cat.id}>
+                  <Link to={`/products?category=${cat.id}`} className="hover:text-emerald-600 transition-colors">{cat.name}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 
           <div className="bg-white rounded-3xl p-6 shadow-sm">
             <h3 className="text-gray-800 text-lg font-bold mb-4">Liên hệ</h3>
             <ul className="space-y-3">
-              <li className="flex items-start gap-3"><MapPin className="text-emerald-500 mt-0.5 shrink-0" size={18} /><span>123 Đường Gia Dụng, Quận 1, TP.HCM</span></li>
+              <li className="flex items-start gap-3"><MapPin className="text-emerald-500 mt-0.5 shrink-0" size={18} /><span>298 Cầu Diễn, Bắc Từ Liêm, Hà Nội</span></li>
               <li className="flex items-center gap-3"><Phone className="text-emerald-500 shrink-0" size={18} /><span>+84 123 456 789</span></li>
               <li className="flex items-center gap-3"><Mail className="text-emerald-500 shrink-0" size={18} /><span>contact@bachhome.com</span></li>
             </ul>

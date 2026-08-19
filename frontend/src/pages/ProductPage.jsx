@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import axios from 'axios'
 import { useCart } from '../context/CartContext'
 import { useWishlist } from '../context/WishlistContext'
@@ -27,10 +28,13 @@ function getPageNumbers(current, total) {
 }
 
 export default function ProductPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
-  const [selectedCategory, setSelectedCategory] = useState('ALL')
+  // Danh mục lấy từ URL (?category=id) để link từ trang chủ / chân trang lọc đúng loại
+  const categoryParam = searchParams.get('category')
+  const [selectedCategory, setSelectedCategory] = useState(categoryParam ? Number(categoryParam) : 'ALL')
   const [searchTerm, setSearchTerm] = useState('')
   const [priceRange, setPriceRange] = useState('ALL')
   const [sortBy, setSortBy] = useState('default')
@@ -41,6 +45,19 @@ export default function ProductPage() {
 
   // Reset về trang 1 khi đổi bộ lọc / tìm kiếm
   useEffect(() => { setPage(1) }, [selectedCategory, searchTerm, priceRange, sortBy])
+
+  // Đồng bộ 2 chiều giữa URL và bộ lọc danh mục
+  useEffect(() => {
+    setSelectedCategory(categoryParam ? Number(categoryParam) : 'ALL')
+  }, [categoryParam])
+
+  const changeCategory = (value) => {
+    setSelectedCategory(value)
+    const next = new URLSearchParams(searchParams)
+    if (value === 'ALL') next.delete('category')
+    else next.set('category', value)
+    setSearchParams(next, { replace: true })
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -119,7 +136,7 @@ export default function ProductPage() {
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-3 mb-6">
           <button
-            onClick={() => setSelectedCategory('ALL')}
+            onClick={() => changeCategory('ALL')}
             className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 ${
               selectedCategory === 'ALL'
                 ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 scale-105'
@@ -131,7 +148,7 @@ export default function ProductPage() {
           {categories.map(cat => (
             <button
               key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
+              onClick={() => changeCategory(cat.id)}
               className={`px-6 py-2.5 rounded-full font-medium transition-all duration-300 ${
                 selectedCategory === cat.id
                   ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 scale-105'
