@@ -3,6 +3,25 @@
 -- Idempotent: every INSERT carries a WHERE NOT EXISTS guard.
 -- Order totals are recomputed from order_items (minus points discount) so they always match.
 
+-- 0) Tương thích ngược với CSDL tạo từ trước khi đề tài đổi sang đồ gia dụng.
+--    Khi đó bảng order_items dùng cột menu_item_id / menu_item_name. Hibernate (ddl-auto: update)
+--    không thể thêm cột NOT NULL vào bảng đang có dữ liệu, nên nó bỏ qua và phần chèn dữ liệu
+--    bên dưới sẽ lỗi, kéo theo cả service-order không khởi động được (mọi API đơn hàng trả 503).
+--    Các câu lệnh dưới đây tự thêm cột nếu thiếu; trên CSDL mới thì chúng không làm gì cả.
+--    Cần bật spring.sql.init.continue-on-error để hai câu UPDATE chép dữ liệu cũ được bỏ qua
+--    khi CSDL không có cột menu_item_* (CSDL mới).
+ALTER TABLE IF EXISTS order_items ADD COLUMN IF NOT EXISTS product_id bigint;
+ALTER TABLE IF EXISTS order_items ADD COLUMN IF NOT EXISTS product_name varchar(200);
+ALTER TABLE IF EXISTS order_items ADD COLUMN IF NOT EXISTS image_url varchar(2000);
+
+-- Chép dữ liệu từ cột cũ sang cột mới (chỉ chạy được trên CSDL cũ, CSDL mới sẽ bỏ qua)
+UPDATE order_items SET product_id = menu_item_id WHERE product_id IS NULL;
+UPDATE order_items SET product_name = menu_item_name WHERE product_name IS NULL;
+
+-- Dòng nào vẫn trống thì điền giá trị thay thế để không chặn ràng buộc NOT NULL
+UPDATE order_items SET product_id = 0 WHERE product_id IS NULL;
+UPDATE order_items SET product_name = 'Sản phẩm không xác định' WHERE product_name IS NULL;
+
 -- 1) Orders (explicit ids 1..17). total_amount starts at 0 and is recomputed from items below.
 INSERT INTO orders (id, user_id, email, total_amount, status, delivery_address, phone_number, customer_name, notes, payment_method, points_used, payment_status, created_at, updated_at)
 SELECT v.id, v.user_id, v.email, v.total_amount, v.status, v.delivery_address, v.phone_number, v.customer_name, v.notes, v.payment_method, v.points_used, v.payment_status, v.created_at, v.updated_at

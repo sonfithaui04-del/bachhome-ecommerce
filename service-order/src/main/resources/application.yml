@@ -17,6 +17,9 @@ spring:
   sql:
     init:
       mode: always
+      # Bỏ qua câu lệnh lỗi trong data.sql (phần chép dữ liệu từ CSDL cũ) thay vì
+      # để cả service không khởi động được.
+      continue-on-error: true
 
   # JPA Configuration
   jpa:
