@@ -10,15 +10,15 @@ pause
 
 echo.
 echo Stopping all services...
-docker-compose down
+docker compose down
 
 echo.
 echo Rebuilding all services...
-docker-compose build --no-cache
+docker compose build --no-cache
 
 echo.
 echo Starting services...
-docker-compose up -d
+docker compose up -d
 
 echo.
 echo ========================================

@@ -5,7 +5,7 @@ echo ========================================
 echo.
 
 echo [1/2] Stopping Docker Services...
-docker-compose down
+docker compose down
 
 echo.
 echo [2/2] Stopping Frontend Applications...

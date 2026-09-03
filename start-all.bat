@@ -1,42 +1,37 @@
 @echo off
+chcp 65001 >nul
 echo ========================================
-echo   FOOD ORDERING SYSTEM - START ALL
+echo   BachHome - Khoi dong toan bo he thong
 echo ========================================
 echo.
 
-echo [1/3] Starting Backend Services (Docker)...
+echo [1/3] Khoi dong Backend (Docker)...
 call start-backend.bat
 
 echo.
-echo [2/3] Waiting for services to be ready (30s)...
-timeout /t 30 /nobreak
+echo [2/3] Doi backend dang ky voi Eureka (60 giay)...
+timeout /t 60 /nobreak
 
 echo.
-echo [3/3] Starting Frontend Applications...
+echo [3/3] Khoi dong giao dien...
 call start-frontend.bat
 
 echo.
 echo ========================================
-echo   ALL SERVICES STARTED!
+echo   DA KHOI DONG XONG
 echo ========================================
 echo.
-echo Backend Services:
-echo  - Eureka Server:    http://localhost:8761
-echo  - API Gateway:      http://localhost:8080
-echo  - Service Auth:     http://localhost:8081
-echo  - Service Menu:     http://localhost:8082
-echo  - Service Order:    http://localhost:8083
-echo  - Service Inventory: http://localhost:8085
-echo  - Service Notification: http://localhost:8086
-echo  - Service Socket:   http://localhost:8089
+echo Giao dien:
+echo  - Trang khach hang: http://localhost:3000
+echo  - Trang quan tri:   http://localhost:3002
 echo.
-echo Frontend Applications:
-echo  - Customer App:     http://localhost:3000
-echo  - Admin Panel:      http://localhost:3002
+echo Tai khoan quan tri:
+echo  - Email:    admin@bachhome.com
+echo  - Mat khau: admin123
 echo.
-echo Admin Login:
-echo  - Email: admin@foodorder.com
-echo  - Password: admin123
+echo Ghi chu: cong cua API Gateway tren may nay do docker-compose.override.yml
+echo quyet dinh (xem danh sach o buoc 1). Hai app giao dien tu doc cong nay
+echo trong file .env.local nen khong can chinh gi them.
 echo.
-echo Press any key to exit...
+echo Nhan phim bat ky de dong cua so nay...
 pause

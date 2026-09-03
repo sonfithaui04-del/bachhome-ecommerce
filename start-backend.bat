@@ -1,38 +1,35 @@
 @echo off
+chcp 65001 >nul
 echo ========================================
-echo   Starting Backend Services (Docker)
+echo   BachHome - Khoi dong Backend (Docker)
 echo ========================================
 echo.
 
-REM Check if Docker is running
+REM Kiem tra Docker da chay chua
 docker info >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ERROR: Docker is not running!
-    echo Please start Docker Desktop and try again.
+    echo LOI: Docker chua chay!
+    echo Hay mo Docker Desktop roi chay lai file nay.
     pause
     exit /b 1
 )
 
-echo Docker is running. Starting services...
+echo Docker da san sang. Dang khoi dong cac service...
 echo.
 
-REM Start all Docker services
-docker-compose up -d --build
+REM Khoi dong toan bo service. Neu vua sua code Java thi chay rebuild-all.bat
+docker compose up -d
 
 echo.
-echo Backend services are starting...
-echo.
-echo Services:
-docker-compose ps
+echo Trang thai container:
+docker compose ps
 
 echo.
-echo Backend started successfully!
+echo Cac dia chi (cong that su dang mo tren may nay):
+for /f "tokens=2 delims=:" %%p in ('docker compose port api-gateway 8080 2^>nul') do echo  - API Gateway:  http://localhost:%%p
+for /f "tokens=2 delims=:" %%p in ('docker compose port eureka-server 8761 2^>nul') do echo  - Eureka:       http://localhost:%%p
+for /f "tokens=2 delims=:" %%p in ('docker compose port rabbitmq 15672 2^>nul') do echo  - RabbitMQ:     http://localhost:%%p
 echo.
-echo Endpoints:
-echo  - Eureka:     http://localhost:8761
-echo  - API Gateway: http://localhost:8080
-echo  - Auth:       http://localhost:8081
-echo  - Menu:       http://localhost:8082
-echo  - Order:      http://localhost:8083
-echo  - Inventory:  http://localhost:8085
+echo Backend can khoang 60-90 giay de dang ky xong voi Eureka.
+echo Neu dat hang bao loi 503 thi doi them mot lat roi thu lai.
 echo.
