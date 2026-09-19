@@ -198,9 +198,11 @@ services:
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 10112004
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
-      SEPAY_BANK_ACCOUNT_NUMBER: "YOUR_ACCOUNT_NUMBER"
-      SEPAY_BANK_CODE: "YOUR_BANK_CODE"
-      SEPAY_ACCOUNT_NAME: "YOUR_ACCOUNT_NAME"
+      # Tài khoản nhận tiền cho mã QR. Giá trị thật đặt trong file .env (đã .gitignore),
+      # không ghi thẳng vào đây để khỏi lộ số tài khoản khi đẩy code lên.
+      SEPAY_BANK_ACCOUNT_NUMBER: ${SEPAY_BANK_ACCOUNT_NUMBER:-}
+      SEPAY_BANK_CODE: ${SEPAY_BANK_CODE:-Vietcombank}
+      SEPAY_ACCOUNT_NAME: ${SEPAY_ACCOUNT_NAME:-}
     depends_on:
       - postgres-payment
       - eureka-server
