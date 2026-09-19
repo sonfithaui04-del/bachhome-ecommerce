@@ -16,8 +16,9 @@ import java.util.Map;
 
 /**
  * Điều phối nghiệp vụ chatbot:
- * 1) Lấy danh sách sản phẩm từ service-product.
- * 2) Dựng system prompt (vai trò trợ lý bán đồ gia dụng).
+ * 1) Lấy kho hàng từ service-product rồi chọn ra những món sát với câu khách vừa hỏi.
+ * 2) Dựng system prompt (vai trò trợ lý bán đồ gia dụng) gồm bản tóm tắt toàn cửa hàng
+ *    và danh sách chi tiết các món đã chọn.
  * 3) Gọi Gemini lấy câu trả lời.
  * 4) Dò các sản phẩm được nhắc trong câu trả lời để trả kèm ảnh.
  */
@@ -48,11 +49,15 @@ public class ChatService {
                     List.of());
         }
 
-        List<Map<String, Object>> products = useProductContext
+        // Cả kho hàng (lấy từ bộ nhớ đệm) và rổ hàng sát với câu khách vừa hỏi.
+        List<Map<String, Object>> allProducts = useProductContext
                 ? productContextProvider.fetchProducts()
                 : List.of();
+        List<Map<String, Object>> products =
+                productContextProvider.selectRelevant(req.getMessage(), allProducts);
+        String catalogSummary = productContextProvider.buildCatalogSummary(allProducts);
         String productContext = productContextProvider.buildContext(products);
-        String systemPrompt = buildSystemPrompt(productContext);
+        String systemPrompt = buildSystemPrompt(catalogSummary, productContext);
 
         List<Map<String, Object>> contents = new ArrayList<>();
         if (req.getHistory() != null) {
@@ -67,11 +72,12 @@ public class ChatService {
         contents.add(Map.of("role", "user", "parts", List.of(Map.of("text", req.getMessage()))));
 
         String reply = geminiClient.generate(systemPrompt, contents);
-        List<ChatResponse.Suggestion> suggestions = matchSuggestions(reply, products);
+        // Dò tên trên toàn kho chứ không chỉ rổ hàng vừa gửi đi, để món nào được nhắc cũng ra ảnh.
+        List<ChatResponse.Suggestion> suggestions = matchSuggestions(reply, allProducts);
         return new ChatResponse(reply, suggestions);
     }
 
-    private String buildSystemPrompt(String productContext) {
+    private String buildSystemPrompt(String catalogSummary, String productContext) {
         StringBuilder sb = new StringBuilder();
         sb.append("Bạn là trợ lý tư vấn bán hàng của ").append(shopName)
                 .append(" - ").append(shopDesc).append(". ");
@@ -81,9 +87,16 @@ public class ChatService {
         sb.append("Nếu khách hỏi ngoài phạm vi bán hàng, hãy lịch sự từ chối và hướng khách quay lại sản phẩm. ");
         sb.append("Khi gợi ý sản phẩm, hãy ghi CHÍNH XÁC nguyên văn tên sản phẩm như trong danh sách bên dưới ");
         sb.append("(không thêm ngoặc hay đổi tên), để hệ thống hiển thị đúng sản phẩm kèm ảnh cho khách. ");
+        if (catalogSummary != null && !catalogSummary.isBlank()) {
+            sb.append("\n\nQuy mô cửa hàng (dùng để trả lời câu hỏi chung về mặt hàng và tầm giá):\n");
+            sb.append(catalogSummary);
+        }
         if (productContext != null && !productContext.isBlank()) {
-            sb.append("\n\nDanh sách sản phẩm hiện có của cửa hàng ");
-            sb.append("(chỉ được gợi ý các sản phẩm trong danh sách này, không bịa thêm):\n");
+            sb.append("\nCác sản phẩm sát với câu hỏi của khách nhất ");
+            sb.append("(chỉ được gợi ý các sản phẩm trong danh sách này, không bịa thêm tên). ");
+            sb.append("Đây chỉ là phần trích, không phải toàn bộ kho: nếu khách hỏi món cửa hàng có bán ");
+            sb.append("nhưng không thấy trong danh sách, hãy mời khách xem thêm ở trang sản phẩm ");
+            sb.append("hoặc nói rõ hơn về nhu cầu để bạn tìm giúp.\n");
             sb.append(productContext);
         } else {
             sb.append("Hiện chưa lấy được danh sách sản phẩm cụ thể, hãy tư vấn chung về đồ gia dụng ");

@@ -16,7 +16,11 @@ ai:
   shop-name: BachHome
   shop-desc: "cửa hàng đồ gia dụng"
   use-product-context: true
+  # Số sản phẩm chi tiết đưa vào mỗi lượt hỏi. Kho có vài trăm món nên không gửi hết:
+  # service chọn những món sát câu hỏi nhất, kèm một đoạn tóm tắt toàn cửa hàng.
   max-products: 40
+  # Bao lâu thì hỏi lại service-product một lần (giây). Giữa hai lần dùng bản trong bộ nhớ.
+  cache-seconds: 300
 
 # Eureka Client Configuration
 eureka:
